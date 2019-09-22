@@ -1,0 +1,2 @@
+Fijar menu lateral y cabecera
+Poner limite al body para que se vea la parte de abajo

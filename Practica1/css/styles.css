@@ -105,6 +105,14 @@ footer{
 
 
 /* General style */
+h2{
+	font-family: Roboto;
+	font-size: 64px;
+	font-weight: 400;
+	color: rgb(64, 89, 173);
+	padding: 30px;
+}
+
 h3{
 	color: rgb(64, 89, 173);
 	font-size: 28px;
@@ -216,6 +224,83 @@ h3{
 			text-align: center;
 			color: white;
 		}
+
+
+/*Register Screen*/
+#register{
+	display: flex;
+	justify-content: space-between;
+	align-items: space-between;
+	align-self: stretch;
+	flex-direction: column;
+	background: rgb(242, 242, 242);
+}
+
+	.mainContainer, .verContainer, .horContainer, .TextTextbox{
+		display: flex;
+		justify-content: space-around;
+		background: rgb(239, 242, 241);
+	}
+	
+		.mainContainer{
+			border-radius: 10px;
+			box-shadow: rgb(64, 89, 173) 0px 0px 0px 3px inset;
+			margin: 30px;
+			margin-top: 0;
+			padding: 30px;
+			height: 72%;
+		}
+
+		.verContainer{
+			flex-direction: column;
+		}
+
+		.horContainer{
+			justify-content: space-between;
+		}
+
+		.TextTextbox{
+			justify-content: center;
+		}
+
+			.regText{
+				font-family: Roboto;
+				font-size: 24px;
+				font-weight: 500;
+				color: rgb(64, 89, 173);
+			}
+
+			input{
+				background: rgb(107, 154, 196);
+				border-radius: 10px;
+				box-shadow: rgb(64, 89, 173) 0px 0px 0px 3px inset;
+				height: 30px;
+				width: 450px;
+				padding-left: 10px;
+				font-family: Roboto;
+				font-size: 18px;
+				font-weight: 500;
+				color: rgb(255, 255, 255);
+			}
+
+			input[name="Name"], input[name="Surname"]{
+				width: 200px;
+			}
+
+			input[type="submit"]{
+				background: rgb(244, 185, 66);
+				height: 100px;
+				width: 180px;
+				padding-left: 0;
+				font-size: 36px;
+				color: rgb(64, 89, 173);
+				text-align: center;
+				align-self: center;
+			}
+
+
+
+
 
 
 
