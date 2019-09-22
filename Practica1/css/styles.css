@@ -1,0 +1,102 @@
+*{
+	font-family: Roboto;
+	margin: 0px;
+	padding: 0px;
+}
+
+/* Header */
+#header {
+	background: rgb(64, 89, 173);
+	display: flex;
+	justify-content: space-between; /* Horizontal alingment */
+	align-items: flex-end; /* Vertical aligment */
+}
+
+	/* CDdede */
+	#title {
+		font-family: "Crete Round";
+		font-size: 96px;
+		font-weight: 400;
+		color: rgb(244, 185, 66);
+		padding: 20px;
+	}
+
+	/* Login and register button */
+	.header_button{
+		font-family: Roboto;
+		font-size: 24px;
+		font-weight: 700;
+		letter-spacing: 0px;
+		color: rgb(151, 216, 196);
+		padding: 20px;
+		float: right;
+	}
+
+/* Body */
+.body {
+	display: flex;
+	justify-content: flex-start;
+	align-items: stretch;
+}
+
+	/* Sidebar */
+	.sidebar{
+		width: 15%;
+		min-height: 100%;
+	}
+
+	.sidebar ul{
+		list-style-type: none;
+	}
+
+	.sidebar li {
+		padding: 8px;
+		color: rgb(64, 89, 173);
+		border-bottom-style: solid;
+		border-bottom-width: 2px;
+		border-bottom-color: #F2F2F2;
+	}
+
+	/* Content itself */
+	.content{
+		width: 85%;
+		min-height: 100%;
+	}
+
+/* Footer */
+footer{
+	background-color: #212121;
+	padding: 10px;
+	overflow: auto;
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+}
+
+	#footer_text{
+		font-family: "Crete Round";
+		font-size: 16px;
+		font-weight: 400;
+		color: rgb(182, 182, 182);
+		position: absolute;
+		bottom: 12px;
+		right: 24px;
+	}
+
+	footer ul{
+		float: left;
+		list-style-type: none;
+	 	overflow: hidden;
+	}
+
+	footer li{
+	  float: left;
+	}
+
+	.social_icon{
+		max-width: 48px;
+		max-height: 48px;
+		padding-left: 8px;
+		float: left;
+	}
