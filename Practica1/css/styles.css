@@ -4,12 +4,25 @@
 	padding: 0px;
 }
 
+body, html{
+	height: 100%;
+}
+
+.fixed{
+	position: fixed;
+}
+
+.filler{
+	visibility: hidden;
+}
+
 /* Header */
-#header {
+.header {
 	background: rgb(64, 89, 173);
 	display: flex;
 	justify-content: space-between; /* Horizontal alingment */
 	align-items: flex-end; /* Vertical aligment */
+	width: 100%;
 }
 
 	/* CDdede */
@@ -62,6 +75,7 @@
 		width: 85%;
 		min-height: 100%;
 		padding: 12px;
+		margin-bottom: 68px;
 	}
 
 /* Footer */
@@ -238,7 +252,6 @@ h3{
 	display: flex;
 	justify-content: space-between;
 	align-items: space-between;
-	align-self: stretch;
 	flex-direction: column;
 	background: rgb(242, 242, 242);
 }
@@ -255,7 +268,6 @@ h3{
 			margin: 30px;
 			margin-top: 0;
 			padding: 30px;
-			height: 72%;
 		}
 
 		.verContainer{
@@ -268,6 +280,7 @@ h3{
 
 		.TextTextbox{
 			justify-content: center;
+			flex-direction: column;
 		}
 
 			.regText{
@@ -277,7 +290,7 @@ h3{
 				color: rgb(64, 89, 173);
 			}
 
-			input{
+			.regTextbox, .regFNTextbox, .regButton, .regPass{
 				background: rgb(107, 154, 196);
 				border-radius: 10px;
 				box-shadow: rgb(64, 89, 173) 0px 0px 0px 3px inset;
@@ -290,11 +303,11 @@ h3{
 				color: rgb(255, 255, 255);
 			}
 
-			input[name="Name"], input[name="Surname"]{
+			.regFNTextbox{
 				width: 200px;
 			}
 
-			input[type="submit"]{
+			.regButton{
 				background: rgb(244, 185, 66);
 				height: 100px;
 				width: 180px;

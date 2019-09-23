@@ -7,7 +7,7 @@
   	</head>
   	<body>
 
-  		<header id="header">
+  		<header class="header fixed">
   			<h1 id="title">CDdede</h1>
   			<div>
   				<!-- Login -->
@@ -16,15 +16,34 @@
   				<div class="header_button">Register</div>
   			</div>
   		</header>
+
+      <header class="header filler">
+        <h1 id="title">CDdede</h1>
+        <div>
+          <!-- Login -->
+          <div class="header_button">Login</div>
+          <!-- Register -->
+          <div class="header_button">Register</div>
+        </div>
+      </header>
   		
   		<div class="body">
-  			<div class="sidebar">
+  			<div class="sidebar fixed">
   				<ul>
   					<li>Special offers</li>
   					<li>Contact</li>
   					<li>About us</li>
   				</ul>
   			</div>
+
+        <div class="sidebar filler">
+          <ul>
+            <li>Special offers</li>
+            <li>Contact</li>
+            <li>About us</li>
+          </ul>
+        </div>
+
   			<div class="content">  				
           <!-- Register Screen -->
           <div id="register"> 
@@ -34,39 +53,39 @@
             <div class="mainContainer">
               <div class="verContainer">
                 <div class="horContainer">
-                  <div class=".TextTextbox">
+                  <div class="TextTextbox">
                     <div class="regText">Name:</div>
-                    <input type="text" name="Name">
+                    <input class="regFNTextbox" type="text" name="Name">
                   </div>
 
-                  <div class=".TextTextbox">
+                  <div class="TextTextbox">
                     <div class="regText">Surname:</div>
-                    <input type="text" name="Surname">
+                    <input class="regFNTextbox" type="text" name="Surname">
                   </div>
                 </div>
 
-                <div class=".TextTextbox">
+                <div class="TextTextbox">
                   <div class="regText">User Name:</div>
-                  <input type="text" name="User Name">
+                  <input class="regTextbox" type="text" name="User Name">
                 </div>
 
-                <div class=".TextTextbox">
+                <div class="TextTextbox">
                   <div class="regText">E-mail:</div>
-                  <input type="text" name="E-mail">
+                  <input class="regTextbox" type="text" name="E-mail">
                 </div>
 
-                <div class=".TextTextbox">
+                <div class="TextTextbox">
                   <div class="regText">Password:</div>
-                  <input type="password" name="Password">
+                  <input class="regPass" type="password" name="Password">
                 </div>
 
-                <div class=".TextTextbox">
+                <div class="TextTextbox">
                   <div class="regText">Credit card:</div>
-                  <input type="text" name="Credit Card">
+                  <input class="regTextbox" type="text" name="Credit Card">
                 </div>
               </div>
 
-              <input type="submit" value="Confirm">
+              <input class="regButton" "type="submit" value="Confirm">
               
             </div>
           </div>
