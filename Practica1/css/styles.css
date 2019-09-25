@@ -34,6 +34,11 @@ body, html{
 		font-weight: 400;
 		color: rgb(244, 185, 66);
 		padding: 20px;
+		cursor: pointer;
+	}
+
+	#title:hover{
+		font-weight: 800;
 	}
 
 	/* Login and register button */
@@ -200,6 +205,25 @@ h3{
 	padding-bottom: 12px;
 }
 
+h4{
+	font-family: Roboto;
+	font-size: 16px;
+	font-weight: 400;
+	color: rgb(64, 89, 173);
+	padding-bottom: 5px;
+	padding-right: 5px;
+	padding-top: 5px;
+}
+
+h5{
+	font-family: Roboto;
+	font-size: 16px;
+	font-weight: 400;
+	color: rgb(0, 0, 0);
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
 /* Main Screen */
 #search_div{
 	display: flex;
@@ -354,24 +378,20 @@ h3{
 			flex-direction: column;
 		}
 
-			.regText{
-				font-family: Roboto;
-				font-size: 24px;
-				font-weight: 500;
-				color: rgb(64, 89, 173);
-			}
-
-			.regTextbox, .regFNTextbox, .regButton, .regPass{
+			.regTextbox, .regFNTextbox, .regButton, .regPass, .addButton{
 				background: rgb(107, 154, 196);
 				border-radius: 10px;
 				box-shadow: rgb(64, 89, 173) 0px 0px 0px 3px inset;
-				height: 30px;
+				height: 25px;
 				width: 450px;
 				padding-left: 10px;
+				margin-bottom: 5px;
+				margin-top: 5px;
 				font-family: Roboto;
 				font-size: 18px;
 				font-weight: 500;
 				color: rgb(255, 255, 255);
+				outline: none;
 			}
 
 			.regFNTextbox{
@@ -387,6 +407,9 @@ h3{
 				color: rgb(64, 89, 173);
 				text-align: center;
 				align-self: center;
+				cursor: pointer;
+				margin-bottom: 0;
+				margin-top: 0;
 			}
 
 
@@ -461,4 +484,54 @@ h3{
 
 		.history_item_button:hover{
 			background-color: #06BA83;
+		}
+
+
+/* Detail */
+#detail {
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+	/* film image */
+	#filmImg{
+		max-height: 450px;
+		width: auto;
+	}
+
+	/*film info*/
+	#info{
+		display: flex;
+		justify-content: center;
+		align-content: space-between;
+		flex-direction: column;
+	}
+
+
+		.infoContainer, .verInfoContainer, .verInfoContainerCenter{
+			display: flex;
+			justify-content: flex-start;
+		}
+
+		.verInfoContainer{
+			align-items: space-around;
+			flex-direction: column;
+		}
+
+		.verInfoContainerCenter{
+			align-content: flex-start;
+			flex-direction: column;
+		}
+
+		.addButton{
+			background: rgb(244, 185, 66);
+			height: 100px;
+			padding-left: 0;
+			font-size: 36px;
+			color: rgb(64, 89, 173);
+			text-align: center;
+			margin-top: 10px;
+			width: auto;
+			cursor: pointer;
 		}
