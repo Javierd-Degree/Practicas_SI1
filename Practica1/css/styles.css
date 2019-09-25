@@ -235,6 +235,11 @@ h3{
 			opacity: 1; /* Firefox */
 		}
 
+		#search_input:focus{
+			outline: none;
+			background-color: #ABABAB;
+		}
+
 		#search_button{
 			height: 32px;
 			width: auto;
@@ -386,8 +391,8 @@ h3{
 
 
 
-/* Search results screen */
-.result_list{
+/* Search results and hitory screen */
+.result_list, .history_list{
 	float: left;
 	display: flex;
 	flex-direction: column;
@@ -397,7 +402,7 @@ h3{
  	width: 100%
 }
 
-	.result_item{
+	.result_item, .history_item{
 		display: flex;
 		justify-content: flex-start;
 		margin: 12px;
@@ -408,11 +413,11 @@ h3{
 		transition: all 400ms cubic-bezier(0.165, 0.840, 0.440, 1.000);
 	}
 
-	.result_item:hover{
+	.result_item:hover, .history_item:hover{
 		box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.19), 0 4px 5px 0 rgba(0, 0, 0, 0.24);
 	}
 
-		.result_item_img{
+		.result_item_img, .history_item_img{
 			width: 120px;
 			height: 120px;
 			object-fit: cover;
@@ -421,7 +426,7 @@ h3{
 	 		margin-right: 12px;
 		}
 
-		.result_item_title{
+		.result_item_title, .history_item_title{
 			color: rgb(64, 89, 173);
 			font-size: 14pt;
 			font-weight: 400;
@@ -429,9 +434,31 @@ h3{
 			padding-right: 12px;
 		}
 
-		.result_item_text{
+		.result_item_text, .history_item_text{
 			color: black;
 			margin-bottom: 12px;
 			margin-right: 18px;
 			text-align: justify;
+		}
+
+		/* Div containing history_item_text and history_item_title*/
+		.history_item_info{
+			flex: 1;
+		}
+
+		.history_item_button{
+			background-color: #97D8C4;
+			color: white;
+			border: none;
+			padding: 12px;
+			font-size: 14pt;
+			border-radius: 5px;
+			align-self: flex-end;
+			margin: 12px;
+			float: right;
+			cursor: pointer;
+		}
+
+		.history_item_button:hover{
+			background-color: #06BA83;
 		}
