@@ -8,7 +8,9 @@
     <body>
 
       <header class="header fixed">
-       <h1 id="title">CDdede</h1>
+    	<a href="./home.html" target="content_iframe">
+    		<h1 id="title">CDdede</h1>
+    	</a>
         <div class="user_div">
           <div class="header_user_info">
             <div class="header_user_name">Welcome User001</div>
@@ -17,11 +19,15 @@
 
           <div>
             <!-- Logout -->
-            <div class="header_button">Logout</div>
+            <a href="./index.html">
+            	<div class="header_button">Logout</div>
+            </a>
             <!-- History -->
-            <div class="header_button">History</div>
+            <a href="./history.html" target="content_iframe">
+            	<div class="header_button">History</div>
+            </a>
             <!-- Basquet -->
-            <div class="header_button">Basquet</div>
+            <div class="header_button">Basket</div>
           </div>
           
         </div>
@@ -64,9 +70,9 @@
           </ul>
         </div>
 
-        <div class="content">         
-          
-          
+        <div class="content">
+          <iframe id="content_iframe" name="content_iframe" src="./home.html">
+          </iframe>
         </div>
       </div>
           

@@ -1,108 +1,60 @@
 <!DOCTYPE HTML>
   	<head>
   		<meta charset="utf-8"> <!-- Carácteres españoles -->
-  		<link rel=StyleSheet href="css/auxil.css" title="propierties" >
+  		<link rel=StyleSheet href="css/styles.css" title="propierties" >
       <link href="https://fonts.googleapis.com/css?family=Crete+Round|Roboto&display=swap" rel="stylesheet">
       <title>CDdede</title>
   	</head>
   	<body>
+      <div id="register">
 
-  		<header class="header fixed">
-  			<h1 id="title">CDdede</h1>
-  			<div>
-  				<!-- Login -->
-  				<div class="header_button">Login</div>
-  				<!-- Register -->
-  				<div class="header_button">Register</div>
-  			</div>
-  		</header>
+        <h2>Register</h2>
 
-      <header class="header filler">
-        <h1 id="title">CDdede</h1>
-        <div>
-          <!-- Login -->
-          <div class="header_button">Login</div>
-          <!-- Register -->
-          <div class="header_button">Register</div>
-        </div>
-      </header>
-
-  		<div class="body">
-  			<div class="sidebar fixed">
-          <ul>
-            <li><img src="./images/tag.png">Special offers</li>
-            <li><img src="./images/contact-mail.png">Contact</li>
-            <li><img src="./images/information.png">About us</li>
-          </ul>
-        </div>
-
-        <div class="sidebar filler">
-          <ul>
-            <li><img src="./images/tag.png">Special offers</li>
-            <li><img src="./images/contact-mail.png">Contact</li>
-            <li><img src="./images/information.png">About us</li>
-          </ul>
-        </div>
-
-  			<div class="content">
-          <!-- Register Screen -->
-          <div id="register">
-
-            <h2>Register</h2>
-
-            <div class="mainContainer">
-              <div class="verContainer">
-                <div class="horContainer">
-                  <div class="TextTextbox">
-                    <h4>Name:</h4>
-                    <input class="regTextbox" type="text" name="Name">
-                  </div>
-
-                  <div class="TextTextbox">
-                    <h4>Surname:</h4>
-                    <input class="regTextbox" type="text" name="Surname">
-                  </div>
-                </div>
-
-                <div class="TextTextbox">
-                  <h4>User Name:</h4>
-                  <input class="regTextbox" type="text" name="User Name">
-                </div>
-
-                <div class="TextTextbox">
-                  <h4>E-mail:</h4>
-                  <input class="regTextbox" type="text" name="E-mail">
-                </div>
-
-                <div class="TextTextbox">
-                  <h4>Password:</h4>
-                  <input class="regTextbox" type="password" name="Password">
-                </div>
-
-                <div class="TextTextbox">
-                  <h4>Credit card:</h4>
-                  <input class="regTextbox" type="text" name="Credit Card">
-                </div>
+        <div class="mainContainer">
+          <div class="verContainer">
+            <div class="horContainer">
+              <div class="TextTextbox">
+                <h4>Name:</h4>
+                <input class="regTextbox" type="text" name="Name">
               </div>
 
-              <input class="regButton" type="submit" value="Confirm">
+              <div class="TextTextbox">
+                <h4>Surname:</h4>
+                <input class="regTextbox" type="text" name="Surname">
+              </div>
+            </div>
 
+            <div class="TextTextbox">
+              <h4>User Name:</h4>
+              <input class="regTextbox" type="text" name="User Name">
+            </div>
+
+            <div class="TextTextbox">
+              <h4>E-mail:</h4>
+              <input class="regTextbox" type="text" name="E-mail">
+            </div>
+
+            <div class="TextTextbox">
+              <h4>Password:</h4>
+              <input class="regTextbox" type="password" name="Password">
+            </div>
+
+            <div class="TextTextbox">
+              <h4>Credit card:</h4>
+              <input class="regTextbox" type="text" name="Credit Card">
             </div>
           </div>
 
-  			</div>
-  		</div>
+          <div class="verContainer">
+            <div class="verExpandableContainer"></div>
+            <div class="verButtonContainer">
+              <a href="./index_logged.html" target="body">
+                <input class="regButton" type="submit" value="Confirm">
+              </a>
+            </div>
+          </div>
 
-		<footer>
-			<ul>
-				<li><img class="social_icon" src="./images/facebook.png"></li>
-				<li><img class="social_icon" src="./images/instagram.png"></li>
-				<li><img class="social_icon" src="./images/twitter.png"></li>
-				<li><img class="social_icon" src="./images/youtube.png"></li>
-			</ul>
-
-			<p id='footer_text'>© 2019. CDdede. All rights reserved</p>
-		</footer>
-
+        </div>
+      </div>
   	</body>
 </html>

@@ -24,7 +24,12 @@ body, html{
 	justify-content: space-between; /* Horizontal alingment */
 	align-items: flex-end; /* Vertical aligment */
 	width: 100%;
+	height: 100px;
 	z-index: 666;
+}
+
+.header a, a:hover, a:visited, a:active, a:link{
+	text-decoration: none;
 }
 
 	/* CDdede */
@@ -111,7 +116,8 @@ body, html{
 	.sidebar{
 		width: 15%;
 		min-width: 140px;
-		min-height: 100%;
+		height: calc(100vh - 100px - 68px);
+		background: white;
 	}
 
 	.sidebar ul{
@@ -142,10 +148,15 @@ body, html{
 	/* Content itself */
 	.content{
 		width: 85%;
-		min-height: 100%;
+		height: calc(100vh - 100px - 68px);
 		padding: 12px;
 		background: #F9F9F9;
-		margin-bottom: 68px;
+	}
+
+	iframe{
+		border: none;
+		height: 100%;
+		width: 100%;
 	}
 
 /* Footer */
@@ -366,20 +377,21 @@ h5{
 
 	.mainContainer, .verContainer, .horContainer, .TextTextbox{
 		display: flex;
-		justify-content: space-around;
-		background: rgb(239, 242, 241);
+		justify-content: space-between;
 	}
 
 		.mainContainer{
-			border-radius: 10px;
-			box-shadow: rgb(64, 89, 173) 0px 0px 0px 3px inset;
+			border-radius: 5px;
+			box-shadow: rgb(64, 89, 173) 0px 0px 0px 2px inset;
 			margin: 30px;
 			margin-top: 0;
 			padding: 30px;
+			align-items: stretch;
 		}
 
 		.verContainer{
 			flex-direction: column;
+			align-content: flex-end;
 		}
 
 		.horContainer{
@@ -389,42 +401,40 @@ h5{
 		.TextTextbox{
 			justify-content: center;
 			flex-direction: column;
+			margin-left: 5px;
+			margin-right: 5px;
 		}
 
-			.regTextbox, .regFNTextbox, .regButton, .regPass, .addButton{
-				background: rgb(107, 154, 196);
-				border-radius: 10px;
-				box-shadow: rgb(64, 89, 173) 0px 0px 0px 3px inset;
+			.regTextbox{
+				background: #FCFCFC;
+				border-radius: 5px;
+				box-shadow: #ABABAB 0px 0px 0px 1px	;
 				height: 25px;
-				width: 450px;
+				padding: 4px;
 				padding-left: 10px;
 				margin-bottom: 5px;
 				margin-top: 5px;
 				font-family: Roboto;
 				font-size: 18px;
 				font-weight: 500;
-				color: rgb(255, 255, 255);
+				color: #000000;
 				outline: none;
-			}
-
-			.regFNTextbox{
-				width: 200px;
+				border: none;
 			}
 
 			.regButton{
-				background: rgb(244, 185, 66);
-				height: 100px;
-				width: 180px;
-				padding-left: 0;
-				font-size: 36px;
-				color: rgb(64, 89, 173);
-				text-align: center;
-				align-self: center;
+				background-color: #97D8C4;
+				box-shadow: #ABABAB 0px 0px 0px 1px	;
+				color: white;
+				border: none;
+				padding: 12px;
+				margin-bottom: 5px;
+				font-size: 14pt;
+				border-radius: 5px;
+				align-self: flex-end;
+				float: right;
 				cursor: pointer;
-				margin-bottom: 0;
-				margin-top: 0;
 			}
-
 
 
 /* Search results and hitory screen */
@@ -504,7 +514,6 @@ h5{
 #detail {
 	display: flex;
 	justify-content: center;
-	align-items: flex-start;
 }
 
 	/* film image */
@@ -522,29 +531,37 @@ h5{
 	}
 
 
-		.infoContainer, .verInfoContainer, .verInfoContainerCenter{
+		.infoContainer, .verInfoContainer, .verTextContainer{
 			display: flex;
 			justify-content: flex-start;
 		}
 
 		.verInfoContainer{
-			align-items: space-around;
+			align-self: space-around;
 			flex-direction: column;
 		}
 
-		.verInfoContainerCenter{
-			align-content: flex-start;
+		.verExpandableContainer{
+			align-self: flex-start;
+			flex-direction: column;
+			flex: 1;
+		}
+
+		.verButtonContainer{
+			align-self: flex-end;
 			flex-direction: column;
 		}
 
 		.addButton{
-			background: rgb(244, 185, 66);
-			height: 100px;
-			padding-left: 0;
-			font-size: 36px;
-			color: rgb(64, 89, 173);
-			text-align: center;
-			margin-top: 10px;
-			width: auto;
+			background-color: #97D8C4;
+			box-shadow: #ABABAB 0px 0px 0px 1px	;
+			color: white;
+			border: none;
+			padding: 12px;
+			margin-bottom: 5px;
+			font-size: 14pt;
+			border-radius: 5px;
+			align-self: flex-end;
+			float: right;
 			cursor: pointer;
 		}
