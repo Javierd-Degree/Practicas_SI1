@@ -30,31 +30,35 @@ body, html{
 	/* CDdede */
 	#title {
 		font-family: 'Crete Round', serif;
-		font-size: 96px;
+		font-size: 32pt;
 		font-weight: 400;
 		color: rgb(244, 185, 66);
 		padding: 20px;
 		cursor: pointer;
+		opacity: 0.85;
+		align-self: center;
 	}
 
 	#title:hover{
-		font-weight: 800;
+		opacity: 1.0;
 	}
 
 	/* Login and register button */
 	.header_button{
-		font-size: 18px;
+		font-size: 12pt;
 		font-weight: 500;
 		letter-spacing: 0px;
 		color: rgb(151, 216, 196);
 		padding: 20px;
 		padding-top: 0px;
+		padding-left: 0px;
 		float: right;
 		cursor: pointer;
+		opacity: 0.85;
 	}
 
 	.header_button:hover{
-		font-weight: 800;
+		opacity: 1.0;
 	}
 
 	/* Div containing all user information and options when it's logged */
@@ -74,19 +78,19 @@ body, html{
 		}
 
 			.header_user_name{
-				font-size: 22px;
+				font-size: 14pt;
 				color: rgb(244, 185, 66);
 				padding-right: 20px;
 				cursor: pointer;
+				opacity: 0.85;
 			}
 
 			.header_user_name:hover{
-				font-weight: 800;
+				opacity: 1.0;
 			}
 
 			.header_user_icon{
-				width: 64px;
-				height: 64px;
+				height: 42px;
 				float: right;
 				cursor: pointer;
 				opacity: 0.9;
@@ -106,6 +110,7 @@ body, html{
 	/* Sidebar */
 	.sidebar{
 		width: 15%;
+		min-width: 140px;
 		min-height: 100%;
 	}
 
@@ -269,11 +274,19 @@ h5{
 			width: auto;
 		}
 
+		#search_button:focus{
+			outline: none;
+		}
+
 	/* Categories dropdown menu */
 	.dropbtn {
 		cursor: pointer;
 		padding-right: 12px;
 		padding-left: 12px;
+	}
+
+	.dropbtn:focus{
+		outline: none;
 	}
 
 	.dropdown {
@@ -356,7 +369,7 @@ h5{
 		justify-content: space-around;
 		background: rgb(239, 242, 241);
 	}
-	
+
 		.mainContainer{
 			border-radius: 10px;
 			box-shadow: rgb(64, 89, 173) 0px 0px 0px 3px inset;
