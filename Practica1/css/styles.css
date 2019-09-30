@@ -33,7 +33,7 @@ body, html{
 }
 
 	/* CDdede */
-	#title {
+	.title {
 		font-family: 'Crete Round', serif;
 		font-size: 32pt;
 		font-weight: 400;
@@ -44,7 +44,7 @@ body, html{
 		align-self: center;
 	}
 
-	#title:hover{
+	.title:hover{
 		opacity: 1.0;
 	}
 
@@ -448,6 +448,7 @@ h5{
  	width: 100%
 }
 
+
 	.result_item, .history_item{
 		display: flex;
 		justify-content: flex-start;
@@ -461,6 +462,12 @@ h5{
 
 	.result_item:hover, .history_item:hover{
 		box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.19), 0 4px 5px 0 rgba(0, 0, 0, 0.24);
+	}
+
+	.list_a_item{
+		display: flex;
+		justify-content: flex-start;
+		flex: 1;
 	}
 
 		.result_item_img, .history_item_img{
