@@ -1,8 +1,10 @@
 <!DOCTYPE HTML>
+<html lang="en">
     <head>
       <meta charset="utf-8"> <!-- Carácteres españoles -->
       <link rel=StyleSheet href="css/styles.css" title="propierties" >
-      <link href="https://fonts.googleapis.com/css?family=Crete+Round|Roboto&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Crete+Round" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
       <title>CDdede</title>
     </head>
     <body>
@@ -10,9 +12,9 @@
       <div id="search_div">
         <div id="search_field">
           <input type="text" placeholder="Search" value="Disney films" id="search_input">
-          <a href="./search.html" target="content_iframe">
-            <input type="image" src="images/search.png" id="search_button">
-          </a>
+          <form action="./search.html" target="content_iframe">
+            <input type="image" src="images/search.png" id="search_button" alt="The icon could not be shown.">
+          </form>
         </div>
         <div class="dropdown" id="category_field">
           <button class="dropbtn">Categories</button>
@@ -32,9 +34,9 @@
 
       <h3>History</h3>
       <ul class="history_list">
-        <a href="./detail.html" target="content_iframe">
-          <li class="history_item">
-            <img class="history_item_img" src="./films/lion.jpg">
+        <li>
+          <a href="./detail.html" target="content_iframe" class="history_item">
+            <img class="history_item_img" src="./films/lion.jpg" alt="The image could not be shown.">
             <div class="history_item_info">
               <div class="history_item_title">THE LION KING - 12.99$</div>
               <div class="history_item_text">
@@ -42,13 +44,15 @@
                 Order date: 21/9/2019 
               </div>
             </div>
+          </a>
+          <form action="./detail.html" target="content_iframe">
             <input class="history_item_button" type="submit" value="Cancel order">
-          </li>
-        </a>
+          </form>
+        </li>
 
-        <a href="./detail.html" target="content_iframe">
-          <li class="history_item">
-            <img class="history_item_img" src="./films/interstelar.jpg">
+        <li>
+          <a href="./detail.html" target="content_iframe" class="history_item">
+            <img class="history_item_img" src="./films/interstelar.jpg" alt="The image could not be shown">
             <div class="history_item_info">
               <div class="history_item_title">INTERSTELLAR - 24.99$</div>
               <div class="history_item_text">
@@ -57,13 +61,15 @@
                 Reception date: 25/9/2019
               </div>
             </div>
+          </a>
+          <form action="./detail.html" target="content_iframe">
             <input class="history_item_button" type="submit" value="Return order">
-          </li>
-        </a>
+          </form>
+        </li>
 
-        <a href="./detail.html" target="content_iframe">
-          <li class="history_item">
-            <img class="history_item_img" src="./films/avatar.jpg">
+        <li>
+          <a href="./detail.html" target="content_iframe" class="history_item">
+            <img class="history_item_img" src="./films/avatar.jpg" alt="The image could not be shown.">
             <div class="history_item_info">
               <div class="history_item_title">AVATAR - 10.99$</div>
               <div class="history_item_text">
@@ -73,8 +79,8 @@
                 You cannot return this order.
               </div>
             </div>
-          </li>
-        </a>
+          </a>
+        </li>
       </ul>
 
 

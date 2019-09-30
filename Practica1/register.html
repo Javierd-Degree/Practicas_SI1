@@ -1,8 +1,10 @@
 <!DOCTYPE HTML>
+<html lang="en">
   	<head>
   		<meta charset="utf-8"> <!-- Carácteres españoles -->
   		<link rel=StyleSheet href="css/styles.css" title="propierties" >
-      <link href="https://fonts.googleapis.com/css?family=Crete+Round|Roboto&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Crete+Round" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
       <title>CDdede</title>
   	</head>
   	<body>
@@ -10,51 +12,51 @@
 
         <h2>Register</h2>
 
-        <div class="mainContainer">
-          <div class="verContainer">
-            <div class="horContainer">
-              <div class="TextTextbox">
-                <h4>Name:</h4>
-                <input class="regTextbox" type="text" name="Name">
+        <form action="./index_logged.html" target="body">
+          <div class="mainContainer">
+            <div class="verContainer">
+              <div class="horContainer">
+                <div class="TextTextbox">
+                  <h4>Name:</h4>
+                  <input class="regTextbox" type="text" name="Name">
+                </div>
+
+                <div class="TextTextbox">
+                  <h4>Surname:</h4>
+                  <input class="regTextbox" type="text" name="Surname">
+                </div>
               </div>
 
               <div class="TextTextbox">
-                <h4>Surname:</h4>
-                <input class="regTextbox" type="text" name="Surname">
+                <h4>User Name:</h4>
+                <input class="regTextbox" type="text" name="User Name">
+              </div>
+
+              <div class="TextTextbox">
+                <h4>E-mail:</h4>
+                <input class="regTextbox" type="text" name="E-mail">
+              </div>
+
+              <div class="TextTextbox">
+                <h4>Password:</h4>
+                <input class="regTextbox" type="password" name="Password">
+              </div>
+
+              <div class="TextTextbox">
+                <h4>Credit card:</h4>
+                <input class="regTextbox" type="text" name="Credit Card">
               </div>
             </div>
 
-            <div class="TextTextbox">
-              <h4>User Name:</h4>
-              <input class="regTextbox" type="text" name="User Name">
-            </div>
-
-            <div class="TextTextbox">
-              <h4>E-mail:</h4>
-              <input class="regTextbox" type="text" name="E-mail">
-            </div>
-
-            <div class="TextTextbox">
-              <h4>Password:</h4>
-              <input class="regTextbox" type="password" name="Password">
-            </div>
-
-            <div class="TextTextbox">
-              <h4>Credit card:</h4>
-              <input class="regTextbox" type="text" name="Credit Card">
-            </div>
-          </div>
-
-          <div class="verContainer">
-            <div class="verExpandableContainer"></div>
-            <div class="verButtonContainer">
-              <a href="./index_logged.html" target="body">
+            <div class="verContainer">
+              <div class="verExpandableContainer"></div>
+              <div class="verButtonContainer">
                 <input class="regButton" type="submit" value="Confirm">
-              </a>
+              </div>
             </div>
-          </div>
 
-        </div>
+          </div>
+        </form>
       </div>
   	</body>
 </html>
