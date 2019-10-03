@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+      <meta charset="utf-8"> <!-- Carácteres españoles -->
+      <link rel=StyleSheet href={{ url_for('static', filename='css/styles.css') }}>
+      <link href="https://fonts.googleapis.com/css?family=Crete+Round" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+      <title>CDdede</title>
+    </head>
+    <body>
+
+      <div id="search_div">
+        <div id="search_field">
+          <input type="text" placeholder="Search" value="Disney films" id="search_input">
+          <form action="./search.html" target="content_iframe">
+            <input type="image" src="images/search.png" id="search_button" alt="The icon could not be shown.">
+          </form>
+        </div>
+        <div class="dropdown" id="category_field">
+          <button class="dropbtn">Categories</button>
+          <div class="dropdown-content">
+            <a href="#">Action</a>
+            <a href="#">Adventure</a>
+            <a href="#">Comedy</a>
+            <a href="#">Crime</a>
+            <a href="#">Dramas</a>
+            <a href="#">Horror</a>
+            <a href="#">Musicals</a>
+            <a href="#">Science fiction</a>
+            <a href="#">Westerns</a>
+          </div>
+        </div>
+      </div>
+
+      <h3>History</h3>
+      <ul class="history_list">
+        <li class="history_item">
+          <a href="./detail.html" target="content_iframe" class="list_a_item">
+            <img class="history_item_img" src="./films/lion.jpg" alt="The image could not be shown.">
+            <div class="history_item_info">
+              <div class="history_item_title">THE LION KING - 12.99$</div>
+              <div class="history_item_text">
+                Sent to: CWC8+Q9 Mountain View, California, EE. UU.<br>
+                Order date: 21/9/2019
+              </div>
+            </div>
+          </a>
+          <form action="./detail.html" target="content_iframe">
+            <input class="history_item_button" type="submit" value="Cancel order">
+          </form>
+        </li>
+
+        <li class="history_item">
+          <a href="./detail.html" target="content_iframe" class="list_a_item">
+            <img class="history_item_img" src="./films/interstelar.jpg" alt="The image could not be shown">
+            <div class="history_item_info">
+              <div class="history_item_title">INTERSTELLAR - 24.99$</div>
+              <div class="history_item_text">
+                Sent to: CWC8+Q9 Mountain View, California, EE. UU.<br>
+                Order date: 11/9/2019<br>
+                Reception date: 25/9/2019
+              </div>
+            </div>
+          </a>
+          <form action="./detail.html" target="content_iframe">
+            <input class="history_item_button" type="submit" value="Return order">
+          </form>
+        </li>
+
+        <li class="history_item">
+          <a href="./detail.html" target="content_iframe" class="list_a_item">
+            <img class="history_item_img" src="./films/avatar.jpg" alt="The image could not be shown.">
+            <div class="history_item_info">
+              <div class="history_item_title">AVATAR - 10.99$</div>
+              <div class="history_item_text">
+                Sent to: CWC8+Q9 Mountain View, California, EE. UU.<br>
+                Order date: 2/8/2019<br>
+                Reception date: 7/8/2019<br>
+                You cannot return this order.
+              </div>
+            </div>
+          </a>
+        </li>
+      </ul>
+
+
+    </body>
+</html>

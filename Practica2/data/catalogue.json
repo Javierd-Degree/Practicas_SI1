@@ -1,0 +1,86 @@
+[
+  {
+    "id": 1,
+    "title": "THE LION KING",
+    "image": "lion.jpg",
+    "director": "George Lucas",
+    "price": 18.99,
+    "category": 1,
+    "year": 1999,
+    "duration": "169 min",
+    "actors": "Nombres..",
+    "synopsis": "Shitty text"
+  },
+  {
+    "id": 1,
+    "title": "THE LION KING",
+    "image": "lion.jpg",
+    "director": "George Lucas",
+    "price": 18.99,
+    "category": 1,
+    "year": 1999,
+    "duration": "169 min",
+    "actors": "Nombres..",
+    "synopsis": "Shitty text"
+  },
+  {
+    "id": 1,
+    "title": "THE LION KING",
+    "image": "lion.jpg",
+    "director": "George Lucas",
+    "price": 18.99,
+    "category": 1,
+    "year": 1999,
+    "duration": "169 min",
+    "actors": "Nombres..",
+    "synopsis": "Shitty text"
+  },
+  {
+    "id": 1,
+    "title": "THE LION KING",
+    "image": "lion.jpg",
+    "director": "George Lucas",
+    "price": 18.99,
+    "category": 1,
+    "year": 1999,
+    "duration": "169 min",
+    "actors": "Nombres..",
+    "synopsis": "Shitty text"
+  },
+  {
+    "id": 1,
+    "title": "THE LION KING",
+    "image": "lion.jpg",
+    "director": "George Lucas",
+    "price": 18.99,
+    "category": 1,
+    "year": 1999,
+    "duration": "169 min",
+    "actors": "Nombres..",
+    "synopsis": "Shitty text"
+  },
+  {
+    "id": 1,
+    "title": "THE LION KING",
+    "image": "lion.jpg",
+    "director": "George Lucas",
+    "price": 18.99,
+    "category": 1,
+    "year": 1999,
+    "duration": "169 min",
+    "actors": "Nombres..",
+    "synopsis": "Shitty text"
+  },
+  {
+    "id": 1,
+    "title": "THE LION KING",
+    "image": "lion.jpg",
+    "director": "George Lucas",
+    "price": 18.99,
+    "category": 1,
+    "year": 1999,
+    "duration": "169 min",
+    "actors": "Nombres..",
+    "synopsis": "Shitty text"
+  }
+]

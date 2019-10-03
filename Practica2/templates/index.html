@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+      <meta charset="utf-8"> <!-- Carácteres españoles -->
+      <link rel=StyleSheet href={{ url_for('static', filename='css/styles.css') }} >
+      <link href="https://fonts.googleapis.com/css?family=Crete+Round" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+      <title>CDdede</title>
+    </head>
+    <body>
+
+      <header class="header fixed">
+        <a href="./home.html" target="content_iframe">
+          <h1 class="title">CDdede</h1>
+        </a>
+        <div>
+          <!-- Login -->
+          <a href="./index_logged.html">
+            <div class="header_button">Login</div>
+          </a>
+
+          <!-- Register -->
+          <a href="./register.html" target="content_iframe">
+            <div class="header_button">Register</div>
+          </a>
+        </div>
+      </header>
+
+      <header class="header filler">
+        <h1 class="title">CDdede</h1>
+        <div>
+          <!-- Login -->
+          <div class="header_button">Login</div>
+          <!-- Register -->
+          <div class="header_button">Register</div>
+        </div>
+      </header>
+
+      <div class="body">
+        <div class="sidebar fixed">
+          <ul>
+            <li><img src={{ url_for('static', filename='images/tag.png') }} alt="The image could not be shown.">Special offers</li>
+            <li><img src={{ url_for('static', filename='images/contact-mail.png') }} alt="The image could not be shown.">Contact</li>
+            <li><img src={{ url_for('static', filename='images/information.png') }} alt="The image could not be shown.">About us</li>
+          </ul>
+        </div>
+
+        <div class="sidebar filler">
+          <ul>
+            <li><img src={{ url_for('static', filename='images/tag.png') }} alt="The image could not be shown.">Special offers</li>
+            <li><img src={{ url_for('static', filename='images/contact-mail.png') }} alt="The image could not be shown.">Contact</li>
+            <li><img src={{ url_for('static', filename='images/information.png') }} alt="The image could not be shown.">About us</li>
+          </ul>
+        </div>
+
+
+        <div class="content">
+          <iframe id="content_iframe" name="content_iframe" src={{ url_for('home') }}>
+          </iframe>
+        </div>
+      </div>
+
+    <footer>
+      <ul>
+        <li><img class="social_icon" src={{ url_for('static', filename='images/facebook.png') }} alt="The image could not be shown."></li>
+        <li><img class="social_icon" src={{ url_for('static', filename='images/instagram.png') }} alt="The image could not be shown."></li>
+        <li><img class="social_icon" src={{ url_for('static', filename='images/twitter.png') }} alt="The image could not be shown."></li>
+        <li><img class="social_icon" src={{ url_for('static', filename='images/youtube.png') }} alt="The image could not be shown."></li>
+      </ul>
+
+      <p id='footer_text'>© 2019. CDdede. All rights reserved</p>
+    </footer>
+
+    </body>
+</html>

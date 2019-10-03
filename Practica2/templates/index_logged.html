@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+      <meta charset="utf-8"> <!-- Carácteres españoles -->
+      <link rel=StyleSheet href={{ url_for('static', filename='css/styles.css') }} >
+      <link href="https://fonts.googleapis.com/css?family=Crete+Round" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+      <title>CDdede</title>
+    </head>
+    <body>
+
+      <header class="header fixed">
+    	<a href="./home.html" target="content_iframe">
+    		<h1 class="title">CDdede</h1>
+    	</a>
+        <div class="user_div">
+          <div class="header_user_info">
+            <div class="header_user_name">Welcome User001</div>
+            <img class="header_user_icon" src="./images/user.png" alt="The image could not be shown.">
+          </div>
+
+          <div>
+            <!-- Logout -->
+            <a href="./index.html">
+            	<div class="header_button">Logout</div>
+            </a>
+            <!-- History -->
+            <a href="./history.html" target="content_iframe">
+            	<div class="header_button">History</div>
+            </a>
+            <!-- Basquet -->
+            <div class="header_button">Basket</div>
+          </div>
+
+        </div>
+      </header>
+
+      <header class="header filler">
+        <h1 class="title">CDdede</h1>
+        <div class="user_div">
+          <div class="header_user_info">
+            <div class="header_user_name">Welcome User001</div>
+            <img class="header_user_icon" src="./images/facebook.png" alt="The image could not be shown.">
+          </div>
+
+          <div>
+            <!-- Logout -->
+            <div class="header_button">Logout</div>
+            <!-- History -->
+            <div class="header_button">History</div>
+            <!-- Basquet -->
+            <div class="header_button">Basquet</div>
+          </div>
+
+        </div>
+      </header>
+
+      <div class="body">
+        <div class="sidebar fixed">
+          <ul>
+            <li><img src="./images/tag.png" alt="The image could not be shown.">Special offers</li>
+            <li><img src="./images/contact-mail.png" alt="The image could not be shown.">Contact</li>
+            <li><img src="./images/information.png" alt="The image could not be shown.">About us</li>
+          </ul>
+        </div>
+
+        <div class="sidebar filler">
+          <ul>
+            <li><img src="./images/tag.png" alt="The image could not be shown.">Special offers</li>
+            <li><img src="./images/contact-mail.png" alt="The image could not be shown.">Contact</li>
+            <li><img src="./images/information.png" alt="The image could not be shown.">About us</li>
+          </ul>
+        </div>
+
+        <div class="content">
+          <iframe id="content_iframe" name="content_iframe" src="./home.html">
+          </iframe>
+        </div>
+      </div>
+
+    <footer>
+      <ul>
+        <li><img class="social_icon" src="./images/facebook.png" alt="The image could not be shown."></li>
+        <li><img class="social_icon" src="./images/instagram.png" alt="The image could not be shown."></li>
+        <li><img class="social_icon" src="./images/twitter.png" alt="The image could not be shown."></li>
+        <li><img class="social_icon" src="./images/youtube.png" alt="The image could not be shown."></li>
+      </ul>
+
+      <p id='footer_text'>© 2019. CDdede. All rights reserved</p>
+    </footer>
+
+    </body>
+</html>

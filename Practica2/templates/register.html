@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  	<head>
+  		<meta charset="utf-8"> <!-- Carácteres españoles -->
+  		<link rel=StyleSheet href={{ url_for('static', filename='css/styles.css') }} >
+      <link href="https://fonts.googleapis.com/css?family=Crete+Round" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+      <title>CDdede</title>
+  	</head>
+  	<body>
+      <div id="register">
+
+        <h2>Register</h2>
+
+        <form action="./index_logged.html" target="body">
+          <div class="mainContainer">
+            <div class="verContainer">
+              <div class="horContainer">
+                <div class="TextTextbox">
+                  <h4>Name:</h4>
+                  <input class="regTextbox" type="text" name="Name">
+                </div>
+
+                <div class="TextTextbox">
+                  <h4>Surname:</h4>
+                  <input class="regTextbox" type="text" name="Surname">
+                </div>
+              </div>
+
+              <div class="TextTextbox">
+                <h4>User Name:</h4>
+                <input class="regTextbox" type="text" name="User Name">
+              </div>
+
+              <div class="TextTextbox">
+                <h4>E-mail:</h4>
+                <input class="regTextbox" type="text" name="E-mail">
+              </div>
+
+              <div class="TextTextbox">
+                <h4>Password:</h4>
+                <input class="regTextbox" type="password" name="Password">
+              </div>
+
+              <div class="TextTextbox">
+                <h4>Credit card:</h4>
+                <input class="regTextbox" type="text" name="Credit Card">
+              </div>
+            </div>
+
+            <div class="verContainer">
+              <div class="verExpandableContainer"></div>
+              <div class="verButtonContainer">
+                <input class="regButton" type="submit" value="Confirm">
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+  	</body>
+</html>
