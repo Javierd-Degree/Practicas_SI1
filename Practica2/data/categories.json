@@ -1,5 +1,9 @@
 [
   {
+    "id": 0,
+    "name": "Cualquier categoria"
+  },
+  {
     "id": 1,
     "name": "Action"
   },

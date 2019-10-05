@@ -9,66 +9,48 @@
     </head>
     <body>
 
-      <div id="search_div">
+      <!-- TODO: Almacenar en servidor y en variable la categoria seleccionada para que se recuerde -->
+      <form action="{{ url_for('search') }}" target="content_iframe" id="search_div">
         <div id="search_field">
-          <input type="text" placeholder="Search" value="Disney films" id="search_input">
-          <form action="./search.html" target="content_iframe">
-            <input type="image" src="images/search.png" id="search_button" alt="The image could not be shown.">
-          </form>
+          <input type="text" placeholder="Search" id="search_input" name="term" value={{term or ''}}>
+          <input type="image" src={{ url_for('static', filename='images/search.png') }} id="search_button" alt="The icon could not be shown.">
+          <!-- Input used to store the showed categoty-->
+          <input type="hidden" name="prev_category" value={{'0' or category['id']}}>
         </div>
+        
         <div class="dropdown" id="category_field">
-          <button class="dropbtn">Categories</button>
+          <button class="dropbtn">{{category['name'] or 'Categories'}}</button>
           <div class="dropdown-content">
-            <a href="#">Action</a>
-            <a href="#">Adventure</a>
-            <a href="#">Comedy</a>
-            <a href="#">Crime</a>
-            <a href="#">Dramas</a>
-            <a href="#">Horror</a>
-            <a href="#">Musicals</a>
-            <a href="#">Science fiction</a>
-            <a href="#">Westerns</a>
+            {% for category in categories_data %}
+              <a href={{ url_for('search', category=category['id']) }} >
+                {{category['name']}}
+              </a>
+            {% endfor %}
           </div>
         </div>
-      </div>
+      </form>
+
 
       <h3>Results</h3>
-      <ul class="result_list">
-        <li class="result_item">
-          <a href="./detail.html" target="content_iframe" class="list_a_item">
-            <img class="result_item_img" src="./films/lion.jpg" alt="The image could not be shown.">
-            <div>
-              <div class="result_item_title">THE LION KING - 12.99$</div>
-              <div class="result_item_text">
-                This Disney animated feature follows the adventures of the young lion Simba, the heir of his father, Mufasa. Simba's wicked uncle, Scar, plots to usurp Mufasa's throne by luring father and son into a stampede of wildebeests. But Simba escapes, and only Mufasa is killed. Simba returns as an adult to take back his homeland from Scar with the help of his friends Timon and Pumbaa.
-              </div>
-            </div>
-          </a>
-        </li>
-
-        <li class="result_item">
-          <a href="./detail.html" target="content_iframe" class="list_a_item">
-            <img class="result_item_img" src="./films/interstelar.jpg" alt="The image could not be shown.">
-            <div>
-              <div class="result_item_title">INTERSTELLAR - 24.99$</div>
-              <div class="result_item_text">
-                Earth's future has been riddled by disasters, famines, and droughts. There is only one way to ensure mankind's survival: Interstellar travel. A newly discovered wormhole in the far reaches of our solar system allows a team of astronauts to go where no man has gone before, a planet that may have the right environment to sustain human life.
-              </div>
-            </div>
-          </a>
-        </li>
-
-        <li class="result_item">
-          <a href="./detail.html" target="content_iframe" class="list_a_item">
-            <img class="result_item_img" src="./films/avatar.jpg" alt="The image could not be shown.">
-            <div>
-              <div class="result_item_title">AVATAR - 10.99$</div>
-              <div class="result_item_text">
-                On the lush alien world of Pandora live the Na'vi, beings who appear primitive but are highly evolved. Because the planet's environment is poisonous, human/Na'vi hybrids, called Avatars, must link to human minds to allow for free movement on Pandora. Jake Sully, a paralyzed former Marine, becomes mobile again through one such Avatar and falls in love with a Na'vi woman. As a bond with her grows, he is drawn into a battle for the survival of her world.
-              </div>
-            </div>
-          </a>
-        </li>
-      </ul>
+      {% if results and results|length > 0 %}
+        <ul class="result_list">
+          {% for film in results %}
+            <li class="result_item">
+              <a href={{ url_for('detail', id=film['id']) }} target="content_iframe" class="list_a_item">
+                <img class="result_item_img" src={{ url_for('data', filename='images/'+film['image']) }} alt="The image could not be shown.">
+                <div>
+                  <div class="result_item_title">{{film['title'] + ' - ' + film['price']|string + '$'}}</div>
+                  <div class="result_item_text">
+                    {{ film['synopsis'] }}
+                  </div>
+                </div>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+      <h2>No results available</h2>
+      {% endif %}
+      
     </body>
 </html>
