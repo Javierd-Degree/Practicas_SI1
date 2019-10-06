@@ -8,25 +8,30 @@
       <title>CDdede</title>
     </head>
     <body>
-      <div id="search_div">
-        <!-- TODO: Almacenar en servidor y en variable la categoria seleccionada para que se recuerde -->
-        <form action="{{ url_for('search') }}" target="content_iframe" id="search_field">
+      <form action="{{ url_for('search') }}" target="content_iframe" id="search_div">
+        <div id="search_field">
           <input type="text" placeholder="Search" id="search_input" name="term" value={{term or ''}}>
           <input type="image" src={{ url_for('static', filename='images/search.png') }} id="search_button" alt="The icon could not be shown.">
           <!-- Input used to store the showed categoty-->
           <input type="hidden" name="prev_category" value={{'0' or category['id']}}>
-        </form>
-        <div class="dropdown" id="category_field">
-          <button class="dropbtn">{{'Categories' or category['name']}}</button>
-          <div class="dropdown-content">
-            {% for category in categories_data %}
-              <a href={{ url_for('search', category=category['id']) }}>
-                {{category['name']}}
-              </a>
-            {% endfor %}
-          </div>
         </div>
-      </div>
+        
+        <div class="select-box">
+          <select name="category" onchange="this.form.submit()">
+            {% for cat in categories_data %}
+              {% if category and category['id'] == cat['id'] %}
+                <option selected="selected" value={{cat['id']}} class="dropdown-item" type="submit">
+                  {{cat['name']}}
+                </option>
+              {% else %}
+                 <option value={{cat['id']}} class="dropdown-item" type="submit">
+                  {{cat['name']}}
+                </option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+      </form>
 
       <h3>Recommended</h3>
       <ul class="film_list">

@@ -4,6 +4,8 @@ import os
 import sys
 
 app = Flask(__name__)
+# TODO Eliminar esta ultima linea
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 DATA_FOLDER = os.path.join(app.root_path,'data/')
 
 @app.route("/")
