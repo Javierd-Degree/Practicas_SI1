@@ -74,11 +74,28 @@ def search():
 
 	return render_template('search.html', term=term, category=category, results=catalogue_data, categories_data=categories_data)
 
-@app.route("/detail/<string:id>")
+@app.route("/detail/<int:id>")
 def detail(id):
 	# TODO Leer todo el catalogo, buscar la pelicula con id=id en el catalogo,
 	# y pasar la pelicula a la plantilla para que esta muestre la informacion
-	return render_template('detail.html')
+
+	dFilter = lambda x: x['id'] == id
+
+	catalogue_data = open(os.path.join(app.root_path,'data/catalogue.json'), encoding="utf-8").read()
+	catalogue_data = json.loads(catalogue_data)
+
+	l = list(filter(dFilter, catalogue_data))
+	film = l[0]
+
+	dCatFilter = lambda x: x['id'] == film['category']
+
+	categories_data = open(os.path.join(app.root_path,'data/categories.json'), encoding="utf-8").read()
+	categories_data = json.loads(categories_data)
+
+	l = list(filter(dCatFilter, categories_data))
+	category = l[0]
+
+	return render_template('detail.html', film=film, category=category)
 
 #
 #

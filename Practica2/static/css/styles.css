@@ -238,6 +238,7 @@ h5{
 	color: rgb(0, 0, 0);
 	padding-top: 5px;
 	padding-bottom: 5px;
+	text-align: justify;
 }
 
 /* Main Screen */
@@ -530,8 +531,11 @@ h5{
 
 	/* film image */
 	#filmImg{
-		max-height: 450px;
-		width: auto;
+		max-width: 25%;
+		min-height: 70vh;
+		object-fit: cover;
+		align-self: flex-start;
+		margin-top: 40px;
 	}
 
 	/*film info*/
@@ -554,9 +558,10 @@ h5{
 		}
 
 		.verExpandableContainer{
-			align-self: flex-start;
+			min-width: 30%;
 			flex-direction: column;
 			flex: 1;
+			margin: 10px;
 		}
 
 		.verButtonContainer{
