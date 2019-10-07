@@ -334,18 +334,18 @@ h5{
 	.dropdown:hover .dropbtn {background-color: #ABABAB;}
 
 .film_list{
-	float: left;
 	list-style-type: none;
- 	overflow: auto;
+	white-space: nowrap;
+    overflow-x: auto;
  	height: 180px;
- 	width: 100%
 }
 
 	.film_item{
-		float: left;
+		display:inline-block
 		margin-right: 20px;
 		position: relative;
 		overflow: auto;
+		display:inline-block;
 	}
 
 		.film_item_img{
@@ -357,8 +357,6 @@ h5{
 		}
 
 		.film_item_img:hover{
-			width: 165px;
-			height: 165px;
 			opacity: 1;
 		}
 
