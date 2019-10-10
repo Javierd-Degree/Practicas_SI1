@@ -1,59 +1,50 @@
-<!DOCTYPE HTML>
-<html lang ="en">
-    <head>
-      <meta charset="utf-8"> <!-- Carácteres españoles -->
-      <link rel=StyleSheet href={{ url_for('static', filename='css/styles.css') }} >
-      <link href="https://fonts.googleapis.com/css?family=Crete+Round" rel="stylesheet">
-      <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
-      <title>CDdede</title>
-    </head>
-    <body>
-      <form action="{{ url_for('search') }}" target="content_iframe" id="search_div">
-        <div id="search_field">
-          <input type="text" placeholder="Search" id="search_input" name="term" value={{term or ''}}>
-          <input type="image" src={{ url_for('static', filename='images/search.png') }} id="search_button" alt="The icon could not be shown.">
-          <!-- Input used to store the showed categoty-->
-          <input type="hidden" name="prev_category" value={{'0' or category['id']}}>
-        </div>
-        
-        <div class="select-box">
-          <select name="category" onchange="this.form.submit()">
-            {% for cat in categories_data %}
-              {% if category and category['id'] == cat['id'] %}
-                <option selected="selected" value={{cat['id']}} class="dropdown-item" type="submit">
-                  {{cat['name']}}
-                </option>
-              {% else %}
-                 <option value={{cat['id']}} class="dropdown-item" type="submit">
-                  {{cat['name']}}
-                </option>
-              {% endif %}
-            {% endfor %}
-          </select>
-        </div>
-      </form>
+{% extends "index.html" %}
+{% block content %}
+  <form action="{{ url_for('search') }}" target="content_iframe" id="search_div">
+    <div id="search_field">
+      <input type="text" placeholder="Search" id="search_input" name="term" value={{term or ''}}>
+      <input type="image" src={{ url_for('static', filename='images/search.png') }} id="search_button" alt="The icon could not be shown.">
+      <!-- Input used to store the showed categoty-->
+      <input type="hidden" name="prev_category" value={{'0' or category['id']}}>
+    </div>
+
+    <div class="select-box">
+      <select name="category" onchange="this.form.submit()">
+        {% for cat in categories_data %}
+          {% if category and category['id'] == cat['id'] %}
+            <option selected="selected" value={{cat['id']}} class="dropdown-item" type="submit">
+              {{cat['name']}}
+            </option>
+          {% else %}
+             <option value={{cat['id']}} class="dropdown-item" type="submit">
+              {{cat['name']}}
+            </option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+  </form>
 
 
-      <h3>Results</h3>
-      {% if results and results|length > 0 %}
-        <ul class="result_list">
-          {% for film in results %}
-            <li class="result_item">
-              <a href={{ url_for('detail', id=film['id']) }} target="content_iframe" class="list_a_item">
-                <img class="result_item_img" src={{ url_for('data', filename='images/'+film['image']) }} alt="The image could not be shown.">
-                <div>
-                  <div class="result_item_title">{{film['title'] + ' - ' + film['price']|string + '$'}}</div>
-                  <div class="result_item_text">
-                    {{ film['synopsis'] }}
-                  </div>
-                </div>
-              </a>
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-      <h2>No results available</h2>
-      {% endif %}
-      
-    </body>
-</html>
+  <h3>Results</h3>
+  {% if results and results|length > 0 %}
+    <ul class="result_list">
+      {% for film in results %}
+        <li class="result_item">
+          <a href={{ url_for('detail', id=film['id']) }} target="content_iframe" class="list_a_item">
+            <img class="result_item_img" src={{ url_for('data', filename='images/'+film['image']) }} alt="The image could not be shown.">
+            <div>
+              <div class="result_item_title">{{film['title'] + ' - ' + film['price']|string + '$'}}</div>
+              <div class="result_item_text">
+                {{ film['synopsis'] }}
+              </div>
+            </div>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+  <h2>No results available</h2>
+  {% endif %}
+
+{% endblock %}

@@ -10,30 +10,85 @@
     <body>
 
       <header class="header fixed">
-        <a href={{ url_for('home') }} target="content_iframe">
+        <a href="/" target="content_iframe">
           <h1 class="title">CDdede</h1>
         </a>
-        <div>
-          <!-- Login -->
-          <a href="./index_logged.html">
-            <div class="header_button">Login</div>
-          </a>
 
-          <!-- Register -->
-          <a href="./register.html" target="content_iframe">
-            <div class="header_button">Register</div>
-          </a>
-        </div>
+        {% if user is defined and user %}
+          <div class="user_div">
+            <div class="header_user_info">
+              <div class="header_user_name">Welcome {{user['name']}}</div>
+              <img class="header_user_icon" src="./images/user.png" alt="The image could not be shown.">
+            </div>
+
+            <div>
+              <!-- Logout -->
+              <a href={{ url_for('logout') }}>
+                <div class="header_button">Logout</div>
+              </a>
+              <!-- History -->
+              <a href={{ url_for('history') }} target="content_iframe">
+                <div class="header_button">History</div>
+              </a>
+              <!-- Basquet -->
+              <div class="header_button">Basket</div>
+            </div>
+
+          </div>
+        {% else %}
+          <div>
+            <!-- Login -->
+            <a href={{ url_for('login') }}>
+              <div class="header_button">Login</div>
+            </a>
+
+            <!-- Register -->
+            <a href={{ url_for('register') }}>
+              <div class="header_button">Register</div>
+            </a>
+          </div>
+        {% endif %}
       </header>
 
       <header class="header filler">
-        <h1 class="title">CDdede</h1>
-        <div>
-          <!-- Login -->
-          <div class="header_button">Login</div>
-          <!-- Register -->
-          <div class="header_button">Register</div>
-        </div>
+        <a href="/" target="content_iframe">
+          <h1 class="title">CDdede</h1>
+        </a>
+
+        {% if user is defined and user %}
+          <div class="user_div">
+            <div class="header_user_info">
+              <div class="header_user_name">Welcome {{user['name']}}</div>
+              <img class="header_user_icon" src="./images/user.png" alt="The image could not be shown.">
+            </div>
+
+            <div>
+              <!-- Logout -->
+              <a href={{ url_for('logout') }}>
+                <div class="header_button">Logout</div>
+              </a>
+              <!-- History -->
+              <a href={{ url_for('history') }} target="content_iframe">
+                <div class="header_button">History</div>
+              </a>
+              <!-- Basquet -->
+              <div class="header_button">Basket</div>
+            </div>
+
+          </div>
+        {% else %}
+          <div>
+            <!-- Login -->
+            <a href={{ url_for('login') }}>
+              <div class="header_button">Login</div>
+            </a>
+
+            <!-- Register -->
+            <a href={{ url_for('register') }} target="content_iframe">
+              <div class="header_button">Register</div>
+            </a>
+          </div>
+        {% endif %}
       </header>
 
       <div class="body">
@@ -55,8 +110,8 @@
 
 
         <div class="content">
-          <iframe id="content_iframe" name="content_iframe" src={{ url_for('home') }}>
-          </iframe>
+          {% block content %}
+          {% endblock %}
         </div>
       </div>
 

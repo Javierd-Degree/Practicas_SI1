@@ -1,62 +1,76 @@
-<!DOCTYPE HTML>
-<html lang="en">
-  	<head>
-  		<meta charset="utf-8"> <!-- Carácteres españoles -->
-  		<link rel=StyleSheet href={{ url_for('static', filename='css/styles.css') }} >
-      <link href="https://fonts.googleapis.com/css?family=Crete+Round" rel="stylesheet">
-      <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
-      <title>CDdede</title>
-  	</head>
-  	<body>
-      <div id="register">
+{% extends "index.html" %}
+{% block content %}
+  <div id="register">
 
-        <h2>Register</h2>
+    <h2>Register</h2>
 
-        <form action="./index_logged.html" target="body">
-          <div class="mainContainer">
-            <div class="verContainer">
-              <div class="horContainer">
-                <div class="TextTextbox">
-                  <h4>Name:</h4>
-                  <input class="regTextbox" type="text" name="Name">
-                </div>
+    <form name="register" action={{ url_for('register') }} target="body" method="post">
+      <div class="mainContainer">
+        <div class="verContainer">
 
-                <div class="TextTextbox">
-                  <h4>Surname:</h4>
-                  <input class="regTextbox" type="text" name="Surname">
-                </div>
-              </div>
-
-              <div class="TextTextbox">
-                <h4>User Name:</h4>
-                <input class="regTextbox" type="text" name="User Name">
-              </div>
-
-              <div class="TextTextbox">
-                <h4>E-mail:</h4>
-                <input class="regTextbox" type="text" name="E-mail">
-              </div>
-
-              <div class="TextTextbox">
-                <h4>Password:</h4>
-                <input class="regTextbox" type="password" name="Password">
-              </div>
-
-              <div class="TextTextbox">
-                <h4>Credit card:</h4>
-                <input class="regTextbox" type="text" name="Credit Card">
-              </div>
-            </div>
-
-            <div class="verContainer">
-              <div class="verExpandableContainer"></div>
-              <div class="verButtonContainer">
-                <input class="regButton" type="submit" value="Confirm">
-              </div>
-            </div>
-
+          <div class="TextTextbox">
+            <h4>User Name:</h4>
+            <input class="regTextbox" type="text" name="name" value={{ name or '' }}>
           </div>
-        </form>
+
+          <div class="TextTextbox">
+            <h4>E-mail:</h4>
+            <input class="regTextbox" type="text" name="mail" value={{ mail or '' }}>
+          </div>
+
+          <div class="TextTextbox">
+            <h4>Password:</h4>
+            <input class="regTextbox" type="password" name="password" id="password" onkeyup='checkPassword();'>
+          </div>
+
+          <div class="TextTextbox">
+            <h4>Repeat Password:</h4>
+            <input class="regTextbox" type="password" id="password2" onkeyup='checkPassword();'>
+            <span id='message'></span>
+          </div>
+
+          <div class="TextTextbox">
+            <h4>Credit card:</h4>
+            <input class="regTextbox" type="text" name="creditCard" value={{ '' or creditCard }}>
+          </div>
+
+          {% if error is defined and error %}
+            <br> <p class="error">{{ error }}</p>
+          {% endif %}
+        </div>
+
+        <div class="verContainer">
+          <div class="verExpandableContainer"></div>
+          <div class="verButtonContainer">
+            <input class="regButton" type="submit" value="Confirm" id="submit">
+          </div>
+        </div>
+
       </div>
-  	</body>
-</html>
+    </form>
+  </div>
+
+  <script>
+    var checkPassword = function(){
+      if(document.getElementById('password').value != document.getElementById('password2').value) {
+        document.getElementById('message').style.color = 'red';
+        document.getElementById('message').innerHTML = 'Not matching';
+        return false;
+      } else {
+        document.getElementById('message').style.color = 'green';
+        document.getElementById('message').innerHTML = 'Matching';
+        return true;
+      }
+    }
+
+    var formComplete = function(){
+        var form = document.forms["register"].elements;
+        var available = true;
+
+        for (var i = 0; i < form.length; i++) {
+            if (form[i].value.length == 0) available = false;
+        }
+        document.getElementById('submit').disabled = !available;
+    }
+  </script>
+{% endblock %}

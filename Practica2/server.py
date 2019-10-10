@@ -1,27 +1,36 @@
-from flask import Flask, render_template, send_from_directory, request
+from flask import Flask, render_template, send_from_directory, request, session
 import json
 import os
 import sys
+import random
+import hashlib
 
 app = Flask(__name__)
 # TODO Eliminar esta ultima linea
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+app.secret_key = 'clave_secreta'
 DATA_FOLDER = os.path.join(app.root_path,'data/')
+
+def getUser():
+	if 'user' in session:
+		return session['user']
+	return None
+
+def isUser(name):
+	folder = os.path.join(app.root_path,'usuarios/'+name)
+	if os.path.isdir(folder):
+		return True
+	return False
 
 @app.route("/")
 def index():
-	return render_template('index.html')
-
-@app.route("/home")
-def home():
 	catalogue_data = open(os.path.join(app.root_path,'data/catalogue.json'), encoding="utf-8").read()
 	categories_data = open(os.path.join(app.root_path,'data/categories.json'), encoding="utf-8").read()
 	catalogue_data = json.loads(catalogue_data)
 	categories_data = json.loads(categories_data)
 	recommended_films = catalogue_data
 	best_seller_films = catalogue_data
-	return render_template('home.html', recommended_films=recommended_films, best_seller_films=best_seller_films, categories_data=categories_data)
-
+	return render_template('home.html', user=getUser(), recommended_films=recommended_films, best_seller_films=best_seller_films, categories_data=categories_data)
 
 @app.route("/search",methods=['GET', 'POST'])
 def search():
@@ -64,7 +73,7 @@ def search():
 	elif term != None:
 		print('Results')
 		sFilter = lambda x: term.lower() in x['title'].lower()
-		
+
 	catalogue_data = open(os.path.join(app.root_path,'data/catalogue.json'), encoding="utf-8").read()
 	categories_data = open(os.path.join(app.root_path,'data/categories.json'), encoding="utf-8").read()
 	catalogue_data = json.loads(catalogue_data)
@@ -72,7 +81,7 @@ def search():
 
 	catalogue_data = list(filter(sFilter, catalogue_data))
 
-	return render_template('search.html', term=term, category=category, results=catalogue_data, categories_data=categories_data)
+	return render_template('search.html', user=getUser(), term=term, category=category, results=catalogue_data, categories_data=categories_data)
 
 @app.route("/detail/<int:id>")
 def detail(id):
@@ -95,7 +104,106 @@ def detail(id):
 	l = list(filter(dCatFilter, categories_data))
 	category = l[0]
 
-	return render_template('detail.html', film=film, category=category)
+	return render_template('detail.html', user=getUser(), film=film, category=category)
+
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+	if request.method == 'GET':
+		return render_template('register.html')
+	else:
+		print(request.form)
+		if 'name' in request.form and 'password' in request.form and \
+			'mail' in request.form and 'creditCard' in request.form:
+			# TODO Validar los datos
+			name = request.form.get('name')
+			password = request.form.get('password')
+			mail = request.form.get('mail')
+			creditCard = request.form.get('creditCard')
+			cash = random.randint(0, 100)
+
+			if isUser(name):
+				# TODO Establecer que ha habido un error
+				# TODO Rellenar todos los datos
+				error = 'User already exists'
+				return render_template('register.html', user=getUser(), name=name, password=password,
+										mail=mail, creditCard=creditCard, error=error)
+
+			folder = os.path.join(app.root_path,'usuarios/'+name)
+			os.mkdir(folder)
+			password = hashlib.md5(password.encode('utf-8')).hexdigest()
+
+			user = {}
+			user['name'] = name
+			user['password'] = password
+			user['mail'] = mail
+			user['creditCard'] = creditCard
+			user['cash'] = cash
+
+			with open(os.path.join(folder, name+'.json'), 'w+', encoding="utf-8") as f:
+				json.dump(user, f)
+
+			session['user'] = user
+			return render_template('index.html', user=user)
+
+		else:
+			# TODO Cambiar esto, devolver con informacion anterior
+			error = 'Not enough information'
+			name = None
+
+			if 'name' in request.form:
+				name = request.form.get('name')
+			password = None
+			if 'password' in request.form:
+				password = request.form.get('password')
+			mail = None
+			if 'mail' in request.form:
+				mail = request.form.get('mail')
+			creditCard = None
+			if 'creditCard' in request.form:
+				creditCard = request.form.get('creditCard')
+
+			return render_template('register.html', name=name, mail=mail,
+									creditCard=creditCard, error=error)
+
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+	if request.method == 'GET':
+		# TODO Pagina login
+		return render_template('login.html')
+	else:
+		if 'name' in request.form and 'password' in request.form:
+			name = request.form.get('name')
+			password = request.form.get('password')
+			if not isUser(name):
+				return render_template('login.html', error='User does not exists')
+
+			folder = os.path.join(app.root_path,'usuarios/'+name)
+			user = None
+			with open(os.path.join(folder, name+'.txt'), encoding="utf-8") as f:
+				user = json.loads(f)
+				hashPassword = hashlib.md5(password.encode('utf-8')).hexdigest()
+				if user['password'] != hashPassword:
+					# La contraseña no es correcta
+					print('{}, {}'.format(user['password'], hashPassword))
+					return render_template('login.html', error='Incorrect password')
+
+			session['user'] = user
+			return render_template('index.html', user=user)
+		else:
+			return render_template('login.html', error='Not enough information')
+
+@app.route("/logout", methods=['GET', 'POST'])
+def logout():
+	session['user'] = None
+	return render_template('index.html', user=None)
+
+@app.route("/history", methods=['GET', 'POST'])
+def history():
+	session['user'] = None
+	return render_template('index.html', user=None)
+
+
 
 #
 #

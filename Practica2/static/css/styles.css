@@ -17,6 +17,11 @@ body, html{
 	visibility: hidden;
 }
 
+.error{
+	color: red;
+	font-size: 16px;
+}
+
 /* Header */
 .header {
 	background: rgb(64, 89, 173);
@@ -294,7 +299,7 @@ h5{
 
 	.select-box {
 		float: right;
-		margin:0px;	
+		margin:0px;
 		border-radius: 6px;
 		background-color: #C4C4C4;
 		padding: 2px;
@@ -327,7 +332,7 @@ h5{
 	option:hover{
 		background-color: #F1F1F1;
 	}
-	
+
 
 	.dropdown-content button:hover, .dropdown-item:hover {background-color: #F1F1F1;}
 	.dropdown:hover .dropdown-content {display: block;}
