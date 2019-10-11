@@ -143,7 +143,7 @@ def register():
 				json.dump(user, f)
 
 			session['user'] = user
-			return render_template('index.html', user=user)
+			return index()
 
 		else:
 			# TODO Cambiar esto, devolver con informacion anterior
@@ -180,28 +180,28 @@ def login():
 
 			folder = os.path.join(app.root_path,'usuarios/'+name)
 			user = None
-			with open(os.path.join(folder, name+'.txt'), encoding="utf-8") as f:
-				user = json.loads(f)
-				hashPassword = hashlib.md5(password.encode('utf-8')).hexdigest()
-				if user['password'] != hashPassword:
-					# La contraseña no es correcta
-					print('{}, {}'.format(user['password'], hashPassword))
-					return render_template('login.html', error='Incorrect password')
+			user_data = open(os.path.join(folder, name+'.json'), encoding="utf-8").read()
+			user = json.loads(user_data)
+			hashPassword = hashlib.md5(password.encode('utf-8')).hexdigest()
+			if user['password'] != hashPassword:
+				# La contraseña no es correcta
+				print('{}, {}'.format(user['password'], hashPassword))
+				return render_template('login.html', error='Incorrect password')
 
 			session['user'] = user
-			return render_template('index.html', user=user)
+			return index()
 		else:
 			return render_template('login.html', error='Not enough information')
 
 @app.route("/logout", methods=['GET', 'POST'])
 def logout():
 	session['user'] = None
-	return render_template('index.html', user=None)
+	return index()
 
 @app.route("/history", methods=['GET', 'POST'])
 def history():
 	session['user'] = None
-	return render_template('index.html', user=None)
+	return index()
 
 
 

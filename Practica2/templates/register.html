@@ -4,23 +4,26 @@
 
     <h2>Register</h2>
 
-    <form name="register" action={{ url_for('register') }} target="body" method="post">
+    <form name="register" action={{ url_for('register') }} target="body" method="post" id="regForm">
       <div class="mainContainer">
         <div class="verContainer">
 
           <div class="TextTextbox">
             <h4>User Name:</h4>
-            <input class="regTextbox" type="text" name="name" value={{ name or '' }}>
+            <input class="regTextbox" type="text" name="name" id="nickname" onkeyup='checkName();' value={{ name or '' }}>
+            <span id='nameMessage'></span>
           </div>
 
           <div class="TextTextbox">
             <h4>E-mail:</h4>
-            <input class="regTextbox" type="text" name="mail" value={{ mail or '' }}>
+            <input class="regTextbox" id="email" type="text" name="mail" onkeyup='checkEmail();' value={{ mail or '' }} >
+            <span id='mailMessage'></span>
           </div>
 
           <div class="TextTextbox">
             <h4>Password:</h4>
             <input class="regTextbox" type="password" name="password" id="password" onkeyup='checkPassword();'>
+            <span id='lenMessage'></span>
           </div>
 
           <div class="TextTextbox">
@@ -34,15 +37,13 @@
             <input class="regTextbox" type="text" name="creditCard" value={{ '' or creditCard }}>
           </div>
 
-          {% if error is defined and error %}
-            <br> <p class="error">{{ error }}</p>
-          {% endif %}
+        <br> <p class="error" id="messageBut">{{ '' or error }}</p>
         </div>
 
         <div class="verContainer">
           <div class="verExpandableContainer"></div>
           <div class="verButtonContainer">
-            <input class="regButton" type="submit" value="Confirm" id="submit">
+            <input class="regButton" type="button" value="Confirm" id="sendf" onclick='formComplete();'>
           </div>
         </div>
 
@@ -51,26 +52,91 @@
   </div>
 
   <script>
+  	var checkName = function(){
+  		var nickname = document.getElementById('nickname').value
+  		if(nickname.indexOf(' ') != -1){
+  			document.getElementById('nameMessage').style.color = 'red';
+			document.getElementById('nameMessage').innerHTML = 'Nickname must not have spaces.';
+			return false;
+  		} else {
+  			document.getElementById('nameMessage').innerHTML = '';
+  			return true;
+  		}
+  	}
+
+  	var checkEmail = function(){
+  		var email = document.getElementById('email').value
+  		if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) == false){
+  			document.getElementById('mailMessage').style.color = 'red';
+			document.getElementById('mailMessage').innerHTML = 'Invalid e-mail.';
+			return false;
+  		} else {
+  			document.getElementById('mailMessage').innerHTML = '';
+  			return true;
+  		}
+  	}
+
     var checkPassword = function(){
-      if(document.getElementById('password').value != document.getElementById('password2').value) {
-        document.getElementById('message').style.color = 'red';
-        document.getElementById('message').innerHTML = 'Not matching';
-        return false;
-      } else {
-        document.getElementById('message').style.color = 'green';
-        document.getElementById('message').innerHTML = 'Matching';
-        return true;
-      }
-    }
+    	var password = document.getElementById('password')
+    	var password2 = document.getElementById('password2')
+    	var ret = true
+
+    	if(password.value.length < 8) {
+			document.getElementById('lenMessage').style.color = 'red';
+			document.getElementById('lenMessage').innerHTML = 'Password is too short.';
+			ret = false;
+		} else {
+			document.getElementById('lenMessage').innerHTML = '';
+		}
+
+		if(password.value != password2.value) {
+			document.getElementById('message').style.color = 'red';
+			document.getElementById('message').innerHTML = 'Not matching.';
+			ret = false;
+		} else {
+			document.getElementById('message').style.color = 'green';
+			document.getElementById('message').innerHTML = 'Matching.';
+		}
+
+		return ret
+	}
 
     var formComplete = function(){
         var form = document.forms["register"].elements;
         var available = true;
+        var err = ''
+
+        var name = checkName(); 
+        if (name == false) {
+        	available = false;
+        	err = err.concat("Invalid nickname.", '<br/>');
+        }
+
+        var email = checkEmail(); 
+        if (email == false) {
+        	available = false;
+        	err = err.concat("Invalid e-mail.", '<br/>');
+        }
+
+        var password = checkPassword(); 
+        if (password == false) {
+        	available = false;
+        	err = err.concat("Invalid password.", '<br/>');
+        }
 
         for (var i = 0; i < form.length; i++) {
-            if (form[i].value.length == 0) available = false;
+            if (form[i].value.length == 0) {
+            	available = false;
+            	err = err.concat("Must complete all fields.", '<br/>');
+            }
         }
-        document.getElementById('submit').disabled = !available;
+
+        if (available == false) {
+        	document.getElementById('messageBut').style.color = 'red';
+        	document.getElementById('messageBut').innerHTML = err;
+        } else {
+        	document.getElementById('regForm').submit();
+        }
     }
   </script>
 {% endblock %}
