@@ -9,46 +9,60 @@ import re
 app = Flask(__name__)
 # TODO Eliminar esta ultima linea
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
-app.secret_key = 'clave_secreta'
+app.secret_key = '\x18\x19\xc3q\xfa\xb8\x80v\x1abf\xd8\xfd%(G\x95\xd7\xae\x9bv\xb0d\xf4'
 DATA_FOLDER = os.path.join(app.root_path,'data/')
 
-def getUser():
+def __getUser__():
 	if 'user' in session:
 		return session['user']
 	return None
 
-def isUser(name):
+def __isUser__(name):
 	folder = os.path.join(app.root_path,'usuarios/'+name)
 	if os.path.isdir(folder):
 		return True
 	return False
 
-def getCatalogue():
+def __getCatalogue__():
 	with open(os.path.join(app.root_path,'data/catalogue.json'), encoding="utf-8") as f:
 		catalogue_data = f.read()
 		return json.loads(catalogue_data)
 
-def getCategories():
+def __getCategories__():
 	with open(os.path.join(app.root_path,'data/categories.json'), encoding="utf-8") as f:
 		categories_data = f.read()
 		return json.loads(categories_data)
 
-def getUserHistory(username):
-	catalogue_data = getCatalogue()
-	categories_data = getCategories()
+def __getBasket__():
+	# session['basket'] stores a list of Films stored as in data/catalogue.json
+	if 'shopping_cart' not in session:
+		session['shopping_cart'] = []
+	return session['shopping_cart']
+
+def __addToBasquet__(item):
+	if 'shopping_cart' not in session:
+		session['shopping_cart'] = [item]
+	else:
+		items = session['shopping_cart']
+		items.append(item)
+		session['shopping_cart'] = items
+
+def __getUserHistory__(username):
+	catalogue_data = __getCatalogue__()
+	categories_data = __getCategories__()
 
 @app.route("/")
 def index():
-	catalogue_data = getCatalogue()
-	categories_data = getCategories()
+	catalogue_data = __getCatalogue__()
+	categories_data = __getCategories__()
 	recommended_films = catalogue_data
 	best_seller_films = catalogue_data
-	return render_template('home.html', user=getUser(), recommended_films=recommended_films, best_seller_films=best_seller_films, categories_data=categories_data)
+	return render_template('home.html', user=__getUser__(), basket=__getBasket__(), recommended_films=recommended_films, best_seller_films=best_seller_films, categories_data=categories_data)
 
 @app.route("/search",methods=['GET', 'POST'])
 def search():
-	catalogue_data = getCatalogue()
-	categories_data = getCategories()
+	catalogue_data = __getCatalogue__()
+	categories_data = __getCategories__()
 
 	term = None
 	if 'term' in request.args:
@@ -68,26 +82,22 @@ def search():
 		else:
 			l = list(filter(lambda x: x['id'] == category, categories_data))
 			category = l[0]
-		print(category)
 
 
 
 	sFilter = lambda x: True
 	if category != None and term != None:
-		print('Category and results')
 		categoryFilter = lambda x: x['category'] == category['id']
 		termFilter = lambda x: term.lower() in x['title'].lower()
 		sFilter = lambda x: termFilter(x) and categoryFilter(x)
 	elif category != None:
-		print('Category')
 		sFilter = lambda x: x['category'] == category['id']
 	elif term != None:
-		print('Results')
 		sFilter = lambda x: term.lower() in x['title'].lower()
 
 	catalogue_data = list(filter(sFilter, catalogue_data))
 
-	return render_template('search.html', user=getUser(), term=term, category=category, results=catalogue_data, categories_data=categories_data)
+	return render_template('search.html', user=__getUser__(), basket=__getBasket__(), term=term, category=category, results=catalogue_data, categories_data=categories_data)
 
 @app.route("/detail/<int:id>")
 def detail(id):
@@ -96,8 +106,8 @@ def detail(id):
 
 	dFilter = lambda x: x['id'] == id
 
-	catalogue_data = getCatalogue()
-	categories_data = getCategories()
+	catalogue_data = __getCatalogue__()
+	categories_data = __getCategories__()
 
 	l = list(filter(dFilter, catalogue_data))
 	film = l[0]
@@ -107,11 +117,13 @@ def detail(id):
 	l = list(filter(dCatFilter, categories_data))
 	category = l[0]
 
-	return render_template('detail.html', user=getUser(), film=film, category=category)
+	return render_template('detail.html', user=__getUser__(), basket=__getBasket__(), film=film, category=category)
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
 	if request.method == 'GET':
+		# Si el usuario va a la pagina de registrarse, se deslogea
+		session['user'] = None
 		return render_template('register.html')
 	else:
 		if 'name' in request.form and 'password' in request.form and \
@@ -123,17 +135,17 @@ def register():
 			creditCard = request.form.get('creditCard')
 			cash = random.randint(0, 100)
 
-			if isUser(name):
+			if __isUser__(name):
 				error = 'User already exists'
-				return render_template('register.html', user=getUser(), name=name, password=password,
+				return render_template('register.html', basket=__getBasket__(), name=name, password=password,
 										mail=mail, creditCard=creditCard, error=error)
 			elif len(password) < 8:
 				error = 'Password is too short.'
-				return render_template('register.html', user=getUser(), name=name, password=password,
+				return render_template('register.html', basket=__getBasket__(), name=name, password=password,
 										mail=mail, creditCard=creditCard, error=error)
 			elif not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', mail):
 				error = 'Invalid e-mail.'
-				return render_template('register.html', user=getUser(), name=name, password=password,
+				return render_template('register.html', basket=__getBasket__(), name=name, password=password,
 										mail=mail, creditCard=creditCard, error=error)
 
 
@@ -156,7 +168,7 @@ def register():
 
 		else:
 			# Devolvemos el formulario con la informacion disponible
-			error = 'Not enough information'
+			error = 'Must complete all fields.'
 			name = None
 
 			if 'name' in request.form:
@@ -171,7 +183,7 @@ def register():
 			if 'creditCard' in request.form:
 				creditCard = request.form.get('creditCard')
 
-			return render_template('register.html', name=name, mail=mail,
+			return render_template('register.html', basket=__getBasket__(), name=name, mail=mail,
 									creditCard=creditCard, error=error)
 
 
@@ -183,8 +195,8 @@ def login():
 		if 'name' in request.form and 'password' in request.form:
 			name = request.form.get('name')
 			password = request.form.get('password')
-			if not isUser(name):
-				return render_template('login.html', error='User does not exists')
+			if not __isUser__(name):
+				return render_template('login.html', error='User does not exists', basket=__getBasket__())
 
 			folder = os.path.join(app.root_path,'usuarios/'+name)
 			user = None
@@ -194,12 +206,29 @@ def login():
 			if user['password'] != hashPassword:
 				# La contraseña no es correcta
 				print('{}, {}'.format(user['password'], hashPassword))
-				return render_template('login.html', error='Incorrect password')
+				return render_template('login.html', error='Incorrect password', basket=__getBasket__())
 
 			session['user'] = user
 			return index()
 		else:
-			return render_template('login.html', error='Not enough information')
+			return render_template('login.html', error='Not enough information', basket=__getBasket__())
+
+@app.route("/addToBasquet/<int:id>", methods=['GET', 'POST'])
+def addToBasquet(id):
+	# TODO: Avisar sutilmente de que se ha añadido a la cesta
+	dFilter = lambda x: x['id'] == id
+
+	catalogue_data = __getCatalogue__()
+
+	l = list(filter(dFilter, catalogue_data))
+	film = l[0]
+	__addToBasquet__(film)
+	return index()
+
+
+@app.route("/basket", methods=['GET', 'POST'])
+def basket():
+	return render_template('basket.html', user=__getUser__(), basket=__getBasket__())
 
 @app.route("/logout", methods=['GET', 'POST'])
 def logout():

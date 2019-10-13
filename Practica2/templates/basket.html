@@ -1,0 +1,24 @@
+{% extends "index.html" %}
+{% block content %}
+  <h3>Shopping cart</h3>
+  {% if basket and basket|length > 0 %}
+    <ul class="result_list">
+      {% for film in basket %}
+        <li class="result_item">
+          <a href={{ url_for('detail', id=film['id']) }} class="list_a_item">
+            <img class="result_item_img" src={{ url_for('data', filename='images/'+film['image']) }} alt="The image could not be shown.">
+            <div>
+              <div class="result_item_title">{{film['title'] + ' - ' + film['price']|string + '$'}}</div>
+              <div class="result_item_text">
+                {{ film['synopsis'] }}
+              </div>
+            </div>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+  <h2>No items available</h2>
+  {% endif %}
+
+{% endblock %}

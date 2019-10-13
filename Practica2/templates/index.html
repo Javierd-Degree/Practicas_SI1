@@ -10,7 +10,7 @@
     <body>
 
       <header class="header fixed">
-        <a href="/" target="content_iframe">
+        <a href="/">
           <h1 class="title">CDdede</h1>
         </a>
 
@@ -22,21 +22,44 @@
             </div>
 
             <div>
+              <!-- Basquet -->
+              <a href={{ url_for('basket') }}>
+                <div class="header_button">
+                  {% if basket|length > 0 %}
+                    ({{ basket|length }})
+                    <img class="header_cart_icon" src={{ url_for('static', filename='images/cart.png') }}>
+                  {% else %}
+                    <img class="header_cart_icon" src={{ url_for('static', filename='images/cart-off.png') }}>
+                  {% endif %}
+                </div>
+              </a>
+
+
               <!-- Logout -->
               <a href={{ url_for('logout') }}>
                 <div class="header_button">Logout</div>
               </a>
               <!-- History -->
-              <a href={{ url_for('history') }} target="content_iframe">
+              <a href={{ url_for('history') }}>
                 <div class="header_button">History</div>
               </a>
-              <!-- Basquet -->
-              <div class="header_button">Basket</div>
             </div>
 
           </div>
         {% else %}
           <div>
+            <!-- Basquet -->
+            <a href={{ url_for('basket') }}>
+              <div class="header_button">
+                {% if basket|length > 0 %}
+                  ({{ basket|length }})
+                  <img class="header_cart_icon" src={{ url_for('static', filename='images/cart.png') }}>
+                {% else %}
+                  <img class="header_cart_icon" src={{ url_for('static', filename='images/cart-off.png') }}>
+                {% endif %}
+              </div>
+            </a>
+
             <!-- Login -->
             <a href={{ url_for('login') }}>
               <div class="header_button">Login</div>
@@ -51,7 +74,7 @@
       </header>
 
       <header class="header filler">
-        <a href="/" target="content_iframe">
+        <a href="/">
           <h1 class="title">CDdede</h1>
         </a>
 
@@ -63,6 +86,18 @@
             </div>
 
             <div>
+              <!-- Basquet -->
+              <a href={{ url_for('basket') }}>
+                <div class="header_button">
+                  {% if basket|length > 0 %}
+                    ({{ basket|length }})
+                    <img class="header_cart_icon" src={{ url_for('static', filename='images/cart.png') }}>
+                  {% else %}
+                    <img class="header_cart_icon" src={{ url_for('static', filename='images/cart-off.png') }}>
+                  {% endif %}
+                </div>
+              </a>
+
               <!-- Logout -->
               <a href={{ url_for('logout') }}>
                 <div class="header_button">Logout</div>
@@ -71,13 +106,23 @@
               <a href={{ url_for('history') }} target="content_iframe">
                 <div class="header_button">History</div>
               </a>
-              <!-- Basquet -->
-              <div class="header_button">Basket</div>
             </div>
 
           </div>
         {% else %}
           <div>
+            <!-- Basquet -->
+            <a href={{ url_for('basket') }}>
+              <div class="header_button">
+                {% if basket|length > 0 %}
+                  ({{ basket|length }})
+                  <img class="header_cart_icon" src={{ url_for('static', filename='images/cart.png') }}>
+                {% else %}
+                  <img class="header_cart_icon" src={{ url_for('static', filename='images/cart-off.png') }}>
+                {% endif %}
+              </div>
+            </a>
+
             <!-- Login -->
             <a href={{ url_for('login') }}>
               <div class="header_button">Login</div>

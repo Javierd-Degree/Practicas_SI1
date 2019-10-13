@@ -57,10 +57,10 @@
 
           </div>
 
-          <div class="verButtonContainer">
-            <input class="addButton" type="button" value="Add to Basket">
-          </div>
-
+          <form action={{ url_for('addToBasquet', id=film['id']) }} class="verButtonContainer">
+            <input class="addButton" type="submit" value="Add to Basket">
+          </form>
+          
         </div>
       </div>
     </div>
