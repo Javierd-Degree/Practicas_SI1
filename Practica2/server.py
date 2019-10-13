@@ -4,6 +4,7 @@ import os
 import sys
 import random
 import hashlib
+import re
 
 app = Flask(__name__)
 # TODO Eliminar esta ultima linea
@@ -22,22 +23,32 @@ def isUser(name):
 		return True
 	return False
 
+def getCatalogue():
+	with open(os.path.join(app.root_path,'data/catalogue.json'), encoding="utf-8") as f:
+		catalogue_data = f.read()
+		return json.loads(catalogue_data)
+
+def getCategories():
+	with open(os.path.join(app.root_path,'data/categories.json'), encoding="utf-8") as f:
+		categories_data = f.read()
+		return json.loads(categories_data)
+
+def getUserHistory(username):
+	catalogue_data = getCatalogue()
+	categories_data = getCategories()
+
 @app.route("/")
 def index():
-	catalogue_data = open(os.path.join(app.root_path,'data/catalogue.json'), encoding="utf-8").read()
-	categories_data = open(os.path.join(app.root_path,'data/categories.json'), encoding="utf-8").read()
-	catalogue_data = json.loads(catalogue_data)
-	categories_data = json.loads(categories_data)
+	catalogue_data = getCatalogue()
+	categories_data = getCategories()
 	recommended_films = catalogue_data
 	best_seller_films = catalogue_data
 	return render_template('home.html', user=getUser(), recommended_films=recommended_films, best_seller_films=best_seller_films, categories_data=categories_data)
 
 @app.route("/search",methods=['GET', 'POST'])
 def search():
-	catalogue_data = open(os.path.join(app.root_path,'data/catalogue.json'), encoding="utf-8").read()
-	categories_data = open(os.path.join(app.root_path,'data/categories.json'), encoding="utf-8").read()
-	catalogue_data = json.loads(catalogue_data)
-	categories_data = json.loads(categories_data)
+	catalogue_data = getCatalogue()
+	categories_data = getCategories()
 
 	term = None
 	if 'term' in request.args:
@@ -74,32 +85,24 @@ def search():
 		print('Results')
 		sFilter = lambda x: term.lower() in x['title'].lower()
 
-	catalogue_data = open(os.path.join(app.root_path,'data/catalogue.json'), encoding="utf-8").read()
-	categories_data = open(os.path.join(app.root_path,'data/categories.json'), encoding="utf-8").read()
-	catalogue_data = json.loads(catalogue_data)
-	categories_data = json.loads(categories_data)
-
 	catalogue_data = list(filter(sFilter, catalogue_data))
 
 	return render_template('search.html', user=getUser(), term=term, category=category, results=catalogue_data, categories_data=categories_data)
 
 @app.route("/detail/<int:id>")
 def detail(id):
-	# TODO Leer todo el catalogo, buscar la pelicula con id=id en el catalogo,
+	# Leer todo el catalogo, buscar la pelicula con id=id en el catalogo,
 	# y pasar la pelicula a la plantilla para que esta muestre la informacion
 
 	dFilter = lambda x: x['id'] == id
 
-	catalogue_data = open(os.path.join(app.root_path,'data/catalogue.json'), encoding="utf-8").read()
-	catalogue_data = json.loads(catalogue_data)
+	catalogue_data = getCatalogue()
+	categories_data = getCategories()
 
 	l = list(filter(dFilter, catalogue_data))
 	film = l[0]
 
 	dCatFilter = lambda x: x['id'] == film['category']
-
-	categories_data = open(os.path.join(app.root_path,'data/categories.json'), encoding="utf-8").read()
-	categories_data = json.loads(categories_data)
 
 	l = list(filter(dCatFilter, categories_data))
 	category = l[0]
@@ -111,7 +114,6 @@ def register():
 	if request.method == 'GET':
 		return render_template('register.html')
 	else:
-		print(request.form)
 		if 'name' in request.form and 'password' in request.form and \
 			'mail' in request.form and 'creditCard' in request.form:
 			# TODO Validar los datos
@@ -122,11 +124,18 @@ def register():
 			cash = random.randint(0, 100)
 
 			if isUser(name):
-				# TODO Establecer que ha habido un error
-				# TODO Rellenar todos los datos
 				error = 'User already exists'
 				return render_template('register.html', user=getUser(), name=name, password=password,
 										mail=mail, creditCard=creditCard, error=error)
+			elif len(password) < 8:
+				error = 'Password is too short.'
+				return render_template('register.html', user=getUser(), name=name, password=password,
+										mail=mail, creditCard=creditCard, error=error)
+			elif not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', mail):
+				error = 'Invalid e-mail.'
+				return render_template('register.html', user=getUser(), name=name, password=password,
+										mail=mail, creditCard=creditCard, error=error)
+
 
 			folder = os.path.join(app.root_path,'usuarios/'+name)
 			os.mkdir(folder)
@@ -146,7 +155,7 @@ def register():
 			return index()
 
 		else:
-			# TODO Cambiar esto, devolver con informacion anterior
+			# Devolvemos el formulario con la informacion disponible
 			error = 'Not enough information'
 			name = None
 
@@ -169,7 +178,6 @@ def register():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
 	if request.method == 'GET':
-		# TODO Pagina login
 		return render_template('login.html')
 	else:
 		if 'name' in request.form and 'password' in request.form:
