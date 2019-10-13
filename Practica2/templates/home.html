@@ -1,6 +1,6 @@
 {% extends "index.html" %}
 {% block content %}
-  <form action="{{ url_for('search') }}" target="content_iframe" id="search_div">
+  <form action="{{ url_for('search') }}" id="search_div">
     <div id="search_field">
       <input type="text" placeholder="Search" id="search_input" name="term" value={{term or ''}}>
       <input type="image" src={{ url_for('static', filename='images/search.png') }} id="search_button" alt="The icon could not be shown.">
@@ -29,7 +29,7 @@
   <ul class="film_list">
     {% for film in recommended_films %}
       <li class="film_item">
-        <a href={{ url_for('detail', id=film['id']) }} target="content_iframe">
+        <a href={{ url_for('detail', id=film['id']) }}>
           <img class="film_item_img" src={{ url_for('data', filename='images/'+film['image']) }} alt="The image could not be shown.">
           <div class="film_item_text">{{film['title']}}<br>{{film['price']}}$</div>
         </a>
@@ -41,7 +41,7 @@
   <ul class="film_list">
     {% for film in best_seller_films %}
       <li class="film_item">
-        <a href={{ url_for('detail', id=film['id']) }} target="content_iframe">
+        <a href={{ url_for('detail', id=film['id']) }}>
           <img class="film_item_img" src={{ url_for('data', filename='images/'+film['image']) }} alt="The image could not be shown.">
           <div class="film_item_text">{{film['title']}}<br>{{film['price']}}$</div>
         </a>
