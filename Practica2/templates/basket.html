@@ -12,11 +12,17 @@
               <div class="result_item_text">
                 {{ film['synopsis'] }}
               </div>
+              <form action={{ url_for('removeFromBasket', id=film['id']) }}>
+                <input class="history_item_button" type="submit" value="Remove">
+              </form>
             </div>
           </a>
         </li>
       {% endfor %}
     </ul>
+    <form action={{ url_for('removeFromBasket', id=-1) }}>
+        <input class="addButton" type="submit" value="Cancel order">
+    </form>
   {% else %}
   <h2>No items available</h2>
   {% endif %}

@@ -39,13 +39,25 @@ def __getBasket__():
 		session['shopping_cart'] = []
 	return session['shopping_cart']
 
-def __addToBasquet__(item):
+def __addToBasket__(item):
 	if 'shopping_cart' not in session:
 		session['shopping_cart'] = [item]
 	else:
 		items = session['shopping_cart']
 		items.append(item)
 		session['shopping_cart'] = items
+
+def __removeFromBasket__(item):
+	if 'shopping_cart' not in session:
+		session['shopping_cart'] = []
+	else:
+		basket = session['shopping_cart']
+		for i in range(len(basket)):
+			if basket[i]['id'] == item:
+				del basket[i]
+				break
+
+		session['shopping_cart'] = basket
 
 def __getUserHistory__(username):
 	catalogue_data = __getCatalogue__()
@@ -213,8 +225,8 @@ def login():
 		else:
 			return render_template('login.html', error='Not enough information', basket=__getBasket__())
 
-@app.route("/addToBasquet/<int:id>", methods=['GET', 'POST'])
-def addToBasquet(id):
+@app.route("/addToBasket/<int:id>", methods=['GET', 'POST'])
+def addToBasket(id):
 	# TODO: Avisar sutilmente de que se ha añadido a la cesta
 	dFilter = lambda x: x['id'] == id
 
@@ -222,8 +234,15 @@ def addToBasquet(id):
 
 	l = list(filter(dFilter, catalogue_data))
 	film = l[0]
-	__addToBasquet__(film)
+	__addToBasket__(film)
 	return index()
+
+@app.route("/removeFromBasket/<int:id>", methods=['GET', 'POST'])
+def removeFromBasket(id):
+	# TODO: Avisar sutilmente de que se ha añadido a la cesta
+	__removeFromBasket__(id)
+
+	return basket()
 
 
 @app.route("/basket", methods=['GET', 'POST'])
