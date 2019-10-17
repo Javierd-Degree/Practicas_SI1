@@ -1,53 +1,32 @@
 {% extends "index.html" %}
 {% block content %}
-  <h3>History</h3>
-  <ul class="history_list">
-    <li class="history_item">
-      <a href="./detail.html" target="content_iframe" class="list_a_item">
-        <img class="history_item_img" src="./films/lion.jpg" alt="The image could not be shown.">
-        <div class="history_item_info">
-          <div class="history_item_title">THE LION KING - 12.99$</div>
-          <div class="history_item_text">
-            Sent to: CWC8+Q9 Mountain View, California, EE. UU.<br>
-            Order date: 21/9/2019
-          </div>
-        </div>
-      </a>
-      <form action="./detail.html" target="content_iframe">
-        <input class="history_item_button" type="submit" value="Cancel order">
-      </form>
-    </li>
 
-    <li class="history_item">
-      <a href="./detail.html" target="content_iframe" class="list_a_item">
-        <img class="history_item_img" src="./films/interstelar.jpg" alt="The image could not be shown">
-        <div class="history_item_info">
-          <div class="history_item_title">INTERSTELLAR - 24.99$</div>
-          <div class="history_item_text">
-            Sent to: CWC8+Q9 Mountain View, California, EE. UU.<br>
-            Order date: 11/9/2019<br>
-            Reception date: 25/9/2019
-          </div>
-        </div>
-      </a>
-      <form action="./detail.html" target="content_iframe">
-        <input class="history_item_button" type="submit" value="Return order">
-      </form>
-    </li>
+  {% if user is defined and user %}
+    <h3>History</h3>
+    {% if history and history|length > 0 %}
+      <ul class="history_list">
+        {% for item in history %}
+          <li class="history_item">
+            <a href={{ url_for('detail', id=item['film']['id']) }} class="list_a_item">
+              <img class="history_item_img" src={{ url_for('data', filename='images/'+item['film']['image']) }} alt="The image could not be shown.">
+              <div class="history_item_info">
+                <div class="history_item_title">{{item['film']['title'] + ' - ' + item['price']|string + '$'}}</div>
+                <div class="history_item_text">
+                  Order date: {{ item['date'] }}
+                </div>
+                <form action={{ url_for('removeFromBasket', id=film['id']) }}>
+                  <input class="history_item_button" type="submit" value="Remove">
+                </form>
+              </div>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <h2>No items available</h2>
+    {% endif %}
 
-    <li class="history_item">
-      <a href="./detail.html" target="content_iframe" class="list_a_item">
-        <img class="history_item_img" src="./films/avatar.jpg" alt="The image could not be shown.">
-        <div class="history_item_info">
-          <div class="history_item_title">AVATAR - 10.99$</div>
-          <div class="history_item_text">
-            Sent to: CWC8+Q9 Mountain View, California, EE. UU.<br>
-            Order date: 2/8/2019<br>
-            Reception date: 7/8/2019<br>
-            You cannot return this order.
-          </div>
-        </div>
-      </a>
-    </li>
-  </ul>
+  {% else %}
+    <h3>Ooops, this was never suppose to happen. <br>You need to be logged in order to see your history.</h3>
+  {% endif %}
 {% endblock %}

@@ -60,8 +60,32 @@ def __removeFromBasket__(item):
 		session['shopping_cart'] = basket
 
 def __getUserHistory__(username):
+	if not __isUser__(username):
+		return []
+
 	catalogue_data = __getCatalogue__()
-	categories_data = __getCategories__()
+	# Leemos el historial del usuario
+	folder = os.path.join(app.root_path,'usuarios/'+username)
+	print(os.path.join(folder, 'history.json'))
+	try:
+		with open(os.path.join(folder, 'history.json'), encoding="utf-8") as f:
+			user_history = f.read()
+			user_history = json.loads(user_history)
+			# Cada elemento de user_history contiene el id de la pelicula, la fecha de compra
+			# y el precio de compra. Cambiamos el id de la pelicula por la pelicula
+			# en sí.
+			for item in user_history:
+				filmID = item['filmId']
+				for film in catalogue_data:
+					if film['id'] == filmID:
+						item['film'] = film
+						break
+			return user_history
+	except Exception as e:
+		# Si el fichero no existe, el usuario no tiene nada en el historial
+		# Imprimimos por si acaso es otro tipo de error
+		print('Excepcion en __getUserHistory__:\n{}'.format(e))
+		return []
 
 @app.route("/")
 def index():
@@ -254,10 +278,11 @@ def logout():
 	session['user'] = None
 	return index()
 
-@app.route("/history", methods=['GET', 'POST'])
+@app.route("/history", methods=['GET'])
 def history():
-	session['user'] = None
-	return index()
+	return render_template('history.html',
+	 						user=__getUser__(),
+							history=__getUserHistory__(session['user']['name']))
 
 
 

@@ -14,7 +14,9 @@ body, html{
 }
 
 .filler{
+	transition: none;
 	visibility: hidden;
+	opacity: 0;
 }
 
 .error{
@@ -131,7 +133,6 @@ body, html{
 	/* Sidebar */
 	.sidebar{
 		width: 15%;
-		min-width: 140px;
 		height: calc(100vh - 100px - 68px);
 		background: white;
 	}
@@ -167,12 +168,6 @@ body, html{
 		height: calc(100vh - 100px - 68px);
 		padding: 12px;
 		background: #F9F9F9;
-	}
-
-	iframe{
-		border: none;
-		height: 100%;
-		width: 100%;
 	}
 
 /* Footer */
@@ -352,7 +347,8 @@ h5{
 .film_list{
 	list-style-type: none;
 	white-space: nowrap;
-    overflow-x: auto;
+	overflow-y: hidden;
+  overflow-x: auto;
  	height: 180px;
 }
 
