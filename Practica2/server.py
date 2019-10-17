@@ -1,10 +1,11 @@
-from flask import Flask, render_template, send_from_directory, request, session
+from flask import Flask, render_template, send_from_directory, request, session, redirect, url_for
 import json
 import os
 import sys
 import random
 import hashlib
 import re
+from datetime import datetime
 
 app = Flask(__name__)
 # TODO Eliminar esta ultima linea
@@ -89,11 +90,18 @@ def __getUserHistory__(username):
 
 @app.route("/")
 def index():
+	message = None
+	if 'message' in request.args:
+		message = request.args.get('message')
 	catalogue_data = __getCatalogue__()
 	categories_data = __getCategories__()
 	recommended_films = catalogue_data
 	best_seller_films = catalogue_data
-	return render_template('home.html', user=__getUser__(), basket=__getBasket__(), recommended_films=recommended_films, best_seller_films=best_seller_films, categories_data=categories_data)
+	return render_template('home.html', user=__getUser__(), basket=__getBasket__(),
+							recommended_films=recommended_films,
+							best_seller_films=best_seller_films,
+							categories_data=categories_data,
+							message=message)
 
 @app.route("/search",methods=['GET', 'POST'])
 def search():
@@ -200,7 +208,7 @@ def register():
 				json.dump(user, f)
 
 			session['user'] = user
-			return index()
+			return redirect(url_for('index'))
 
 		else:
 			# Devolvemos el formulario con la informacion disponible
@@ -245,7 +253,7 @@ def login():
 				return render_template('login.html', error='Incorrect password', basket=__getBasket__())
 
 			session['user'] = user
-			return index()
+			return redirect(url_for('index'))
 		else:
 			return render_template('login.html', error='Not enough information', basket=__getBasket__())
 
@@ -259,31 +267,61 @@ def addToBasket(id):
 	l = list(filter(dFilter, catalogue_data))
 	film = l[0]
 	__addToBasket__(film)
-	return index()
+	return index(message='Item added')
 
 @app.route("/removeFromBasket/<int:id>", methods=['GET', 'POST'])
 def removeFromBasket(id):
-	# TODO: Avisar sutilmente de que se ha añadido a la cesta
 	__removeFromBasket__(id)
-
-	return basket()
+	return redirect(url_for('basket'))
 
 
 @app.route("/basket", methods=['GET', 'POST'])
 def basket():
-	return render_template('basket.html', user=__getUser__(), basket=__getBasket__())
+	if request.method == 'GET':
+		return render_template('basket.html', user=__getUser__(), basket=__getBasket__())
+
+	if request.method == 'POST':
+		user = session['user']
+		name = user['name']
+		history = __getUserHistory__(name)
+		price = 0
+
+		for film in session['shopping_cart']:
+			price += film['price']
+
+		if price > user['cash']:
+			error = 'Not enough cash in your acount'
+			return render_template('basket.html', user=__getUser__(), basket=__getBasket__(), error=error)
+
+		else:
+			user['cash'] -= price
+			for film in session['shopping_cart']:
+				film_data = {}
+				film_data['filmId'] = film['id']
+				film_data['price'] = film['price']
+				film_data['date'] = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+				history.append(film_data)
+
+
+			session['shopping_cart'] = []
+			folder = os.path.join(app.root_path,'usuarios/'+name)
+			with open(os.path.join(folder, name+'.json'), 'w', encoding='utf-8') as f:
+				json.dump(user, f)
+			with open(os.path.join(folder, 'history'+'.json'), 'w', encoding='utf-8') as f:
+				json.dump(history, f)
+
+			return redirect(url_for('index', message='Purchase completed'))
 
 @app.route("/logout", methods=['GET', 'POST'])
 def logout():
 	session['user'] = None
-	return index()
+	return redirect(url_for('index'))
 
 @app.route("/history", methods=['GET'])
 def history():
 	return render_template('history.html',
 	 						user=__getUser__(),
 							history=__getUserHistory__(session['user']['name']))
-
 
 
 #

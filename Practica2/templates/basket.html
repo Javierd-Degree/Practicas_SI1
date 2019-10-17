@@ -20,11 +20,16 @@
         </li>
       {% endfor %}
     </ul>
-    <form action={{ url_for('removeFromBasket', id=-1) }}>
-        <input class="addButton" type="submit" value="Cancel order">
-    </form>
+
+    {% if user is defined and user %}
+      <form action={{ url_for('basket') }} method="post">
+          <input class="addButton" type="submit" value="Finish Purchase">
+      </form>
+    {% else %}
+      <span id='need_logged'> Need to be logged in to finish the purchase.</span>
+    {% endif %}
+    <br> <p class="error">{{ '' or error }}</p>
   {% else %}
   <h2>No items available</h2>
   {% endif %}
-
 {% endblock %}

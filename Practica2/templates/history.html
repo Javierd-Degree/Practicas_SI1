@@ -14,9 +14,6 @@
                 <div class="history_item_text">
                   Order date: {{ item['date'] }}
                 </div>
-                <form action={{ url_for('removeFromBasket', id=film['id']) }}>
-                  <input class="history_item_button" type="submit" value="Remove">
-                </form>
               </div>
             </a>
           </li>

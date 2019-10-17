@@ -592,3 +592,13 @@ h5{
 			float: right;
 			cursor: pointer;
 		}
+
+		.addButton:hover{
+			background-color: #06BA83;
+		}
+
+
+		/*Shopping cart*/
+		#need_logged{
+			float: right;
+		}

@@ -5,6 +5,7 @@
       <link rel=StyleSheet href={{ url_for('static', filename='css/styles.css') }} >
       <link href="https://fonts.googleapis.com/css?family=Crete+Round" rel="stylesheet">
       <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
       <title>CDdede</title>
     </head>
     <body>
@@ -172,4 +173,13 @@
     </footer>
 
     </body>
+    <!-- Posibilitamos el mostrar un mensaje usando un alert de Javascript -->
+    {% if message is defined and message %}
+      <script>
+        $(document).ready(function(){
+          window.alert('{{ message }}');
+        });
+      </script>
+    {% endif %}
+
 </html>
