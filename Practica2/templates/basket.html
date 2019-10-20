@@ -7,7 +7,7 @@
         <li class="result_item">
           <a href={{ url_for('detail', id=film['id']) }} class="list_a_item">
             <img class="result_item_img" src={{ url_for('data', filename='images/'+film['image']) }} alt="The image could not be shown.">
-            <div>
+            <div class="basket_item">
               <div class="result_item_title">{{film['title'] + ' - ' + film['price']|string + '$'}}</div>
               <div class="result_item_text">
                 {{ film['synopsis'] }}
@@ -21,7 +21,7 @@
               		<input type="image" src={{ url_for('static', filename='images/plus.png') }} id="search_button" alt="The icon could not be shown.">
               	</form>
               </div>
-              <form action={{ url_for('removeFromBasket', id=film['id']) }}>
+              <form action={{ url_for('removeFromBasket', id=film['id']) }} class="basket_item_form">
                 <input class="history_item_button" type="submit" value="Remove">
               </form>
             </div>

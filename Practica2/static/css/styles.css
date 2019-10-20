@@ -494,6 +494,10 @@ h5{
 		flex: 1;
 	}
 
+	.basket_item{
+		width: 100%;
+	}
+
 		.result_item_img, .history_item_img{
 			width: 120px;
 			height: 120px;
@@ -540,6 +544,10 @@ h5{
 			background-color: #06BA83;
 		}
 
+		.basket_item_form{
+			float: right;
+		}
+
 
 /* Detail */
 #detail {
@@ -554,6 +562,7 @@ h5{
 		object-fit: cover;
 		align-self: flex-start;
 		margin-top: 40px;
+		margin-right: 40px;
 	}
 
 	/*film info*/

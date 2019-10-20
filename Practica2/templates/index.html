@@ -176,7 +176,12 @@
     <!-- Posibilitamos el mostrar un mensaje usando un alert de Javascript -->
     {% if message is defined and message %}
       <script>
-        $(document).ready(function(){
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+        $(window).on('load', async function () {
+          /* Wait some time to make sure animations are finished */
+          await delay(400);
+          console.log('Waited');
           window.alert('{{ message }}');
         });
       </script>
