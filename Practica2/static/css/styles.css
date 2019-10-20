@@ -452,6 +452,11 @@ h5{
 				cursor: pointer;
 			}
 
+			.regButton:hover{
+			background-color: #06BA83;
+			}
+
+
 
 /* Search results and hitory screen */
 .result_list, .history_list{
@@ -601,4 +606,39 @@ h5{
 		/*Shopping cart*/
 		#need_logged{
 			float: right;
+		}
+
+		.quantityCont{
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+		}
+
+		.quantTextBox{
+			background: #FCFCFC;
+			border-radius: 5px;
+			box-shadow: #ABABAB 0px 0px 0px 1px	;
+			height: 25px;
+			padding: 4px;
+			padding-left: 10px;
+			margin-bottom: 5px;
+			margin-top: 5px;
+			margin-right: 10px;
+			font-family: Roboto;
+			font-size: 18px;
+			font-weight: 500;
+			color: #000000;
+			outline: none;
+			border: none;
+			width: 50px;
+		}
+
+		.priceBox{
+
+		}
+
+		#priceSpan{
+			color: rgb(64, 89, 173);
+			font-size: 28px;
+			font-weight: 400;
 		}

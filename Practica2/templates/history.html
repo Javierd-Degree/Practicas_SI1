@@ -12,6 +12,9 @@
               <div class="history_item_info">
                 <div class="history_item_title">{{item['film']['title'] + ' - ' + item['price']|string + '$'}}</div>
                 <div class="history_item_text">
+                  Quantity: {{ item['quantity'] }}
+                </div>
+                <div class="history_item_text">
                   Order date: {{ item['date'] }}
                 </div>
               </div>

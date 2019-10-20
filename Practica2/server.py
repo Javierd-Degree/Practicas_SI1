@@ -43,9 +43,18 @@ def __getBasket__():
 def __addToBasket__(item):
 	if 'shopping_cart' not in session:
 		session['shopping_cart'] = [item]
+		session['shopping_cart'][0]['quantity'] = 1
 	else:
+		flag = 0
 		items = session['shopping_cart']
-		items.append(item)
+		for i in range(len(items)):
+			if items[i]['id'] == item['id']:
+				items[i]['quantity'] += 1
+				flag = 1
+				break
+		if flag == 0:
+			items.append(item)
+			items[len(items)-1]['quantity'] = 1
 		session['shopping_cart'] = items
 
 def __removeFromBasket__(item):
@@ -56,6 +65,21 @@ def __removeFromBasket__(item):
 		for i in range(len(basket)):
 			if basket[i]['id'] == item:
 				del basket[i]
+				break
+
+		session['shopping_cart'] = basket
+
+def __removeOneFromBasket__(item):
+	if 'shopping_cart' not in session:
+		session['shopping_cart'] = []
+	else:
+		basket = session['shopping_cart']
+		for i in range(len(basket)):
+			if basket[i]['id'] == item:
+				if basket[i]['quantity'] == 1:
+					del basket[i]
+				else:
+					basket[i]['quantity'] -= 1
 				break
 
 		session['shopping_cart'] = basket
@@ -168,7 +192,7 @@ def register():
 	if request.method == 'GET':
 		# Si el usuario va a la pagina de registrarse, se deslogea
 		session['user'] = None
-		return render_template('register.html')
+		return render_template('register.html', basket=__getBasket__())
 	else:
 		if 'name' in request.form and 'password' in request.form and \
 			'mail' in request.form and 'creditCard' in request.form:
@@ -234,7 +258,7 @@ def register():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
 	if request.method == 'GET':
-		return render_template('login.html')
+		return render_template('login.html', basket=__getBasket__())
 	else:
 		if 'name' in request.form and 'password' in request.form:
 			name = request.form.get('name')
@@ -267,38 +291,58 @@ def addToBasket(id):
 	l = list(filter(dFilter, catalogue_data))
 	film = l[0]
 	__addToBasket__(film)
-	return index(message='Item added')
+	return redirect(url_for('index', message='Item added'))
 
 @app.route("/removeFromBasket/<int:id>", methods=['GET', 'POST'])
 def removeFromBasket(id):
 	__removeFromBasket__(id)
 	return redirect(url_for('basket'))
 
+@app.route("/incCount/<int:id>", methods=['GET', 'POST'])
+def incCount(id):
+	# TODO: Avisar sutilmente de que se ha añadido a la cesta
+	dFilter = lambda x: x['id'] == id
+
+	catalogue_data = __getCatalogue__()
+
+	l = list(filter(dFilter, catalogue_data))
+	film = l[0]
+	__addToBasket__(film)
+	return redirect(url_for('basket'))
+
+@app.route("/decCount/<int:id>", methods=['GET', 'POST'])
+def decCount(id):
+	__removeOneFromBasket__(id)
+	return redirect(url_for('basket'))
+
 
 @app.route("/basket", methods=['GET', 'POST'])
 def basket():
+	price = 0
 	if request.method == 'GET':
-		return render_template('basket.html', user=__getUser__(), basket=__getBasket__())
+		for film in session['shopping_cart']:
+			price += film['price']*film['quantity']
+		return render_template('basket.html', user=__getUser__(), basket=__getBasket__(), price=price)
 
 	if request.method == 'POST':
 		user = session['user']
 		name = user['name']
 		history = __getUserHistory__(name)
-		price = 0
 
 		for film in session['shopping_cart']:
-			price += film['price']
+			price += film['price']*film['quantity']
 
 		if price > user['cash']:
 			error = 'Not enough cash in your acount'
-			return render_template('basket.html', user=__getUser__(), basket=__getBasket__(), error=error)
+			return render_template('basket.html', user=__getUser__(), basket=__getBasket__(), price=price, error=error)
 
 		else:
 			user['cash'] -= price
 			for film in session['shopping_cart']:
 				film_data = {}
 				film_data['filmId'] = film['id']
-				film_data['price'] = film['price']
+				film_data['price'] = film['price']*film['quantity']
+				film_data['quantity'] = film['quantity']
 				film_data['date'] = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
 				history.append(film_data)
 
@@ -321,7 +365,8 @@ def logout():
 def history():
 	return render_template('history.html',
 	 						user=__getUser__(),
-							history=__getUserHistory__(session['user']['name']))
+							history=__getUserHistory__(session['user']['name']),
+							basket=__getBasket__())
 
 
 #

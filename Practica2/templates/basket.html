@@ -12,6 +12,15 @@
               <div class="result_item_text">
                 {{ film['synopsis'] }}
               </div>
+              <div class="quantityCont">
+              	<input class="quantTextBox" type="text" value={{film['quantity']}}>
+              	<form action={{ url_for('decCount', id=film['id']) }}>
+              		<input type="image" src={{ url_for('static', filename='images/minus.png') }} id="search_button" alt="The icon could not be shown.">
+              	</form>
+              	<form action={{ url_for('incCount', id=film['id']) }}>
+              		<input type="image" src={{ url_for('static', filename='images/plus.png') }} id="search_button" alt="The icon could not be shown.">
+              	</form>
+              </div>
               <form action={{ url_for('removeFromBasket', id=film['id']) }}>
                 <input class="history_item_button" type="submit" value="Remove">
               </form>
@@ -21,6 +30,9 @@
       {% endfor %}
     </ul>
 
+    <div class="priceBox">
+    	<div id='priceSpan'> Price: {{price}}$</div>
+
     {% if user is defined and user %}
       <form action={{ url_for('basket') }} method="post">
           <input class="addButton" type="submit" value="Finish Purchase">
@@ -28,6 +40,7 @@
     {% else %}
       <span id='need_logged'> Need to be logged in to finish the purchase.</span>
     {% endif %}
+	</div>
     <br> <p class="error">{{ '' or error }}</p>
   {% else %}
   <h2>No items available</h2>
