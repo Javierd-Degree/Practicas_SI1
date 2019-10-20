@@ -132,9 +132,9 @@ body, html{
 
 	/* Sidebar */
 	.sidebar{
-		width: 15%;
-		height: calc(100vh - 100px - 68px);
 		background: white;
+		height: 100%;
+		width: 15%;
 	}
 
 	.sidebar ul{
@@ -164,10 +164,13 @@ body, html{
 
 	/* Content itself */
 	.content{
-		width: 85%;
-		height: calc(100vh - 100px - 68px);
 		padding: 12px;
 		background: #F9F9F9;
+		width: 100%;
+		height: calc(100vh - 115px - 68px);
+		overflow: auto;
+		position: relative;
+		right: 0;
 	}
 
 /* Footer */
@@ -222,7 +225,7 @@ h2{
 	font-size: 64px;
 	font-weight: 400;
 	color: rgb(64, 89, 173);
-	padding: 30px;
+	padding-bottom: 15px;
 }
 
 h3{
@@ -399,8 +402,8 @@ h5{
 		.mainContainer{
 			border-radius: 5px;
 			box-shadow: rgb(64, 89, 173) 0px 0px 0px 2px inset;
-			margin: 30px;
 			margin-top: 0;
+			margin-bottom: 15px;
 			padding: 30px;
 			align-items: stretch;
 		}

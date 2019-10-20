@@ -104,6 +104,7 @@
     var formComplete = function(){
         var form = document.forms["register"].elements;
         var available = true;
+        var incomplete = false;
         var err = ''
 
         var name = checkName(); 
@@ -127,8 +128,12 @@
         for (var i = 0; i < form.length; i++) {
             if (form[i].value.length == 0) {
             	available = false;
-            	err = err.concat("Must complete all fields.", '<br/>');
+            	incomplete = true;
             }
+        }
+
+        if (incomplete == true){
+        	err = err.concat("Must complete all fields.", '<br/>');
         }
 
         if (available == false) {
