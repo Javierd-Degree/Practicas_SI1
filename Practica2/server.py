@@ -310,6 +310,24 @@ def incCount(id):
 	__addToBasket__(film)
 	return redirect(url_for('basket'))
 
+@app.route("/change_quant/<int:id>", methods=['GET', 'POST'])
+def change_quant(id):
+	# TODO: Avisar sutilmente de que se ha añadido a la cesta
+	if 'quant' in request.args:
+		quant = request.args.get('quant')
+		quant = int(quant)
+		if quant == 0:
+			__removeFromBasket__(id)
+		else:
+			basket = session['shopping_cart']
+			for i in range(len(basket)):
+				if basket[i]['id'] == id:
+					basket[i]['quantity'] = quant
+					session['shopping_cart'] = basket
+					break
+			print(basket[i]['id'])
+	return redirect(url_for('basket'))
+
 @app.route("/decCount/<int:id>", methods=['GET', 'POST'])
 def decCount(id):
 	__removeOneFromBasket__(id)
@@ -322,6 +340,7 @@ def basket():
 	if request.method == 'GET':
 		for film in session['shopping_cart']:
 			price += film['price']*film['quantity']
+			price = format(price, '.2f')
 		return render_template('basket.html', user=__getUser__(), basket=__getBasket__(), price=price)
 
 	if request.method == 'POST':
