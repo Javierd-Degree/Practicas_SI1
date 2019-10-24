@@ -576,7 +576,7 @@ h5{
 	/* film image */
 	#filmImg{
 		max-width: 25%;
-		min-height: 70vh;
+		min-height: 60vh;
 		object-fit: cover;
 		align-self: flex-start;
 		margin-top: 40px;
