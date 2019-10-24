@@ -548,6 +548,24 @@ h5{
 			float: right;
 		}
 
+		.addCashButton{
+			background-color: #97D8C4;
+			box-shadow: #ABABAB 0px 0px 0px 1px	;
+			color: white;
+			border: none;
+			padding: 5px;
+			border-radius: 5px;
+			cursor: pointer;
+			height: 30px;
+			font-family: Roboto;
+			font-size: 18px;
+			font-weight: 500;
+		}
+
+		.addCashButton:hover{
+			background-color: #06BA83;
+		}
+
 
 /* Detail */
 #detail {

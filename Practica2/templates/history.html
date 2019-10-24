@@ -8,7 +8,7 @@
       Add cash:
       <form id="cashForm" method="post" action={{ url_for('cash')}}>
         <input class="cashTextBox" type="number" min="0" id="quantity" name="cash" onkeyup='checkNumber()'>
-        <input type="button" onclick="send()" value="Add">
+        <input class="addCashButton" type="button" onclick="send()" value="Add">
         <span id='quantMessage'></span>
       </form>
     </div>
