@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_from_directory, request, session, redirect, url_for
+from flask import Flask, render_template, send_from_directory, request, session, redirect, url_for, make_response
 import json
 import os
 import sys
@@ -228,7 +228,7 @@ def register():
 			user['creditCard'] = creditCard
 			user['cash'] = cash
 
-			with open(os.path.join(folder, name+'.json'), 'w+', encoding="utf-8") as f:
+			with open(os.path.join(folder, 'datos.dat'), 'w+', encoding="utf-8") as f:
 				json.dump(user, f)
 
 			session['user'] = user
@@ -258,7 +258,8 @@ def register():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
 	if request.method == 'GET':
-		return render_template('login.html', basket=__getBasket__())
+		username = request.cookies.get('username')
+		return render_template('login.html', username=username, basket=__getBasket__())
 	else:
 		if 'name' in request.form and 'password' in request.form:
 			name = request.form.get('name')
@@ -268,7 +269,7 @@ def login():
 
 			folder = os.path.join(app.root_path,'usuarios/'+name)
 			user = None
-			user_data = open(os.path.join(folder, name+'.json'), encoding="utf-8").read()
+			user_data = open(os.path.join(folder, 'datos.dat'), encoding="utf-8").read()
 			user = json.loads(user_data)
 			hashPassword = hashlib.md5(password.encode('utf-8')).hexdigest()
 			if user['password'] != hashPassword:
@@ -277,7 +278,10 @@ def login():
 				return render_template('login.html', error='Incorrect password', basket=__getBasket__())
 
 			session['user'] = user
-			return redirect(url_for('index'))
+			# Add a cookie to store the last logged users' name
+			resp = make_response(redirect(url_for('index')))
+			resp.set_cookie('username', name)
+			return resp
 		else:
 			return render_template('login.html', error='Not enough information', basket=__getBasket__())
 
@@ -368,12 +372,27 @@ def basket():
 
 			session['shopping_cart'] = []
 			folder = os.path.join(app.root_path,'usuarios/'+name)
-			with open(os.path.join(folder, name+'.json'), 'w', encoding='utf-8') as f:
+			with open(os.path.join(folder, 'data.dat'), 'w', encoding='utf-8') as f:
 				json.dump(user, f)
 			with open(os.path.join(folder, 'history'+'.json'), 'w', encoding='utf-8') as f:
 				json.dump(history, f)
 
 			return redirect(url_for('index', message='Purchase completed'))
+
+@app.route("/cash/", methods=['GET', 'POST'])
+def cash():
+	cash = request.form.get('cash')
+	user = __getUser__()
+	user['cash'] += float(cash)
+	# Redondeamos a dos decimales
+	user['cash'] = round(user['cash'], 2)
+	session['user'] = user
+
+	folder = os.path.join(app.root_path,'usuarios/'+user['name'])
+	with open(os.path.join(folder, 'data.dat'), 'w', encoding='utf-8') as f:
+		json.dump(user, f)
+
+	return redirect(url_for('history'))
 
 @app.route("/logout", methods=['GET', 'POST'])
 def logout():
@@ -386,6 +405,11 @@ def history():
 	 						user=__getUser__(),
 							history=__getUserHistory__(session['user']['name']),
 							basket=__getBasket__())
+
+# Devolvemos un numero aleatorio de usuarios logeados en la plataforma
+@app.route("/numUsers", methods=['GET', 'POST'])
+def numUsers():
+	return str(random.randint(0, 100))
 
 
 #

@@ -13,6 +13,7 @@
       <header class="header fixed">
         <a href="/">
           <h1 class="title">CDdede</h1>
+          <p id="numLoggedUsers"></p>
         </a>
 
         {% if user is defined and user %}
@@ -174,17 +175,35 @@
 
     </body>
     <!-- Posibilitamos el mostrar un mensaje usando un alert de Javascript -->
-    {% if message is defined and message %}
+
       <script>
         const delay = ms => new Promise(res => setTimeout(res, ms));
 
-        $(window).on('load', async function () {
-          /* Wait some time to make sure animations are finished */
-          await delay(400);
-          console.log('Waited');
-          window.alert('{{ message }}');
-        });
+        /* Show an alert if there's a message to show */
+        {% if message is defined and message %}
+          $(window).on('load', async function () {
+            /* Wait some time to make sure animations are finished */
+            await delay(400);
+            window.alert('{{ message }}');
+          });
+        {% endif %}
+
+        /* Load the number of connected users every 3 seconds */
+        (function worker() {
+          $.ajax({
+            url: "{{ url_for('numUsers') }}",
+            success: function(data) {
+              console.log(data);
+              $("#numLoggedUsers").text("Logged users: "+data);
+            },
+            complete: function() {
+              // Schedule the next request when the current one's complete
+              setTimeout(worker, 3000);
+            }
+          });
+        })();
+
       </script>
-    {% endif %}
+
 
 </html>

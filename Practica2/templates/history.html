@@ -3,6 +3,16 @@
 
   {% if user is defined and user %}
     <h3>History</h3>
+    <div>
+      <h4>Available cash: {{user['cash']}}$</h4>
+      Add cash:
+      <form id="cashForm" method="post" action={{ url_for('cash')}}>
+        <input class="cashTextBox" type="number" min="0" id="quantity" name="cash" onkeyup='checkNumber()'>
+        <input type="button" onclick="send()" value="Add">
+        <span id='quantMessage'></span>
+      </form>
+    </div>
+
     {% if history and history|length > 0 %}
       <ul class="history_list">
         {% for item in history %}
@@ -29,4 +39,39 @@
   {% else %}
     <h3>Ooops, this was never suppose to happen. <br>You need to be logged in order to see your history.</h3>
   {% endif %}
+
+<!-- Script para comprobar que el saldo añadido es un numero y es positivo -->
+  <script>
+    var checkNumber = function(){
+      var number = document.getElementById('quantity').value;
+      var err = false;
+      if (number == ''){
+        err = true;
+      }
+      if (err == false) {
+        number = Number(number);
+        if (number < 0){
+          err = true;
+        }
+      }
+      if (err == true){
+        document.getElementById('quantMessage').style.color = 'red';
+        document.getElementById('quantMessage').innerHTML = 'Invalid quantity.';
+        return false;
+      } else{
+        document.getElementById('quantMessage').innerHTML = '';
+        return true;
+      }
+    }
+    var send = function(){
+      var correct = false;
+      correct = checkNumber();
+      if (correct == false){
+        return false;
+      }else{
+        document.getElementById('cashForm').submit();
+      }
+    }
+  </script>
+
 {% endblock %}

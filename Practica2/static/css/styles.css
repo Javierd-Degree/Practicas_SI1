@@ -626,7 +626,7 @@ h5{
 			align-items: center;
 		}
 
-		.quantTextBox{
+		.quantTextBox, .cashTextBox{
 			background: #FCFCFC;
 			border-radius: 5px;
 			box-shadow: #ABABAB 0px 0px 0px 1px	;
@@ -643,6 +643,10 @@ h5{
 			outline: none;
 			border: none;
 			width: 50px;
+		}
+
+		.cashTextBox{
+			width: 180px;
 		}
 
 		.priceBox{

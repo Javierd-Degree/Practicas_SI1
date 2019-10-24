@@ -14,7 +14,7 @@
               </div>
               <h4>Quantity: </h4>
               <div class="quantityCont">
-              	<form id="quantForm" name="formDet" action={{ url_for('change_quant', id=film['id']) }} onsubmit="send(); return false;">
+              	<form id="quantForm" action={{ url_for('change_quant', id=film['id']) }} onsubmit="send(); return false;">
               		<input class="quantTextBox" type="text" id="quantity" name="quant" onkeyup='checkNumber();' value={{'' or film['quantity']}}>
               		<span id='quantMessage'></span>
               	</form>
@@ -37,14 +37,14 @@
     <div class="priceBox">
     	<div id='priceSpan'> Price: {{price}}$</div>
 
-    {% if user is defined and user %}
-      <form action={{ url_for('basket') }} method="post">
-          <input class="addButton" type="submit" value="Finish Purchase">
-      </form>
-    {% else %}
-      <span id='need_logged'> Need to be logged in to finish the purchase.</span>
-    {% endif %}
-	</div>
+      {% if user is defined and user %}
+        <form action={{ url_for('basket') }} method="post">
+            <input class="addButton" type="submit" value="Finish Purchase">
+        </form>
+      {% else %}
+        <span id='need_logged'> Need to be logged in to finish the purchase.</span>
+      {% endif %}
+    </div>
     <br> <p class="error">{{ '' or error }}</p>
   {% else %}
   <h2>No items available</h2>
@@ -60,7 +60,7 @@
   			number = Number(number);
   			if (number%1 != 0 || number < 0){
   				err = true;
-  			} 
+  			}
   		}
   		if (err == true){
   			document.getElementById('quantMessage').style.color = 'red';
