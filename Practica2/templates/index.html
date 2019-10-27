@@ -193,7 +193,6 @@
           $.ajax({
             url: "{{ url_for('numUsers') }}",
             success: function(data) {
-              console.log(data);
               $("#numLoggedUsers").text("Logged users: "+data);
             },
             complete: function() {

@@ -480,6 +480,38 @@ h5{
  	width: 100%
 }
 
+	.history_day_card{
+		background-color: white;
+		margin-bottom: 20px;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.history_list{
+		display: none;
+	}
+
+	.history_day_card_title{
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.history_day_card_title_text{
+		padding: 0px;
+		margin-left: 24px;
+		font-size: 15pt;
+	}
+
+	.history_day_card_title_image{
+		max-height: 48px;
+		max-width: 48px;
+		cursor: pointer;
+	}
+
+	.history_chevron_up{
+		display: none;
+	}
 
 	.result_item, .history_item{
 		display: flex;
@@ -509,6 +541,8 @@ h5{
 		.result_item_img, .history_item_img{
 			width: 120px;
 			height: 120px;
+			min-width: 120px;
+			min-height: 120px;
 			object-fit: cover;
 			cursor: pointer;
 	 		align-self: center;

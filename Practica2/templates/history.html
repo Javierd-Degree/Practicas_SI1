@@ -14,24 +14,34 @@
     </div>
 
     {% if history and history|length > 0 %}
-      <ul class="history_list">
-        {% for item in history %}
-          <li class="history_item">
-            <a href={{ url_for('detail', id=item['film']['id']) }} class="list_a_item">
-              <img class="history_item_img" src={{ url_for('data', filename='images/'+item['film']['image']) }} alt="The image could not be shown.">
-              <div class="history_item_info">
-                <div class="history_item_title">{{item['film']['title'] + ' - ' + item['price']|string + '$'}}</div>
-                <div class="history_item_text">
-                  Quantity: {{ item['quantity'] }}
-                </div>
-                <div class="history_item_text">
-                  Order date: {{ item['date'] }}
-                </div>
-              </div>
-            </a>
-          </li>
-        {% endfor %}
-      </ul>
+      {% for date, films in history.items() %}
+        <div class="history_day_card">
+          <div class="history_day_card_title">
+            <h3 class="history_day_card_title_text">Date: {{ date }}</h2>
+            <img class="history_day_card_title_image history_chevron_down title_button_{{date}}" id="chevron_down_{{date}}" src={{ url_for('static', filename='images/chevron-down.png') }}>
+            <img class="history_day_card_title_image history_chevron_up title_button_{{date}}" id="chevron_up_{{date}}" src={{ url_for('static', filename='images/chevron-up.png') }}>
+          </div>
+          
+          <ul class="history_list" id="history_list_{{date}}">
+            {% for item in films %}
+              <li class="history_item">
+                <a href={{ url_for('detail', id=item['film']['id']) }} class="list_a_item">
+                  <img class="history_item_img" src={{ url_for('data', filename='images/'+item['film']['image']) }} alt="The image could not be shown.">
+                  <div class="history_item_info">
+                    <div class="history_item_title">{{item['film']['title'] + ' - ' + item['price']|string + '$'}}</div>
+                    <div class="history_item_text">
+                      Quantity: {{ item['quantity'] }}
+                    </div>
+                    <div class="history_item_text">
+                      Order time: {{ item['time'] }}
+                    </div>
+                  </div>
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
     {% else %}
       <h2>No items available</h2>
     {% endif %}
@@ -72,6 +82,20 @@
         document.getElementById('cashForm').submit();
       }
     }
+  </script>
+
+  <!-- Script para expandir y contraer loe elementos del item -->
+  <script type="text/javascript">
+    {% if history and history|length > 0 %}
+      {% for date, films in history.items() %}
+        $(".title_button_"+$.escapeSelector("{{date}}")).click(function () {
+          $("#history_list_"+$.escapeSelector("{{date}}")).slideToggle();
+          $("#chevron_down_"+$.escapeSelector("{{date}}")).toggle();
+          $("#chevron_up_"+$.escapeSelector("{{date}}")).toggle();
+        });
+      {% endfor %}
+    {% endif %}
+    
   </script>
 
 {% endblock %}

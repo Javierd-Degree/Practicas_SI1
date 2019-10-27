@@ -94,6 +94,29 @@ def __getUserHistory__(username):
 	print(os.path.join(folder, 'history.json'))
 	try:
 		with open(os.path.join(folder, 'history.json'), encoding="utf-8") as f:
+			date_history = {}
+			user_history = f.read()
+			return json.loads(user_history)
+
+	except Exception as e:
+		# Si el fichero no existe, el usuario no tiene nada en el historial
+		# Imprimimos por si acaso es otro tipo de error
+		print('Excepcion en __getUserHistory__:\n{}'.format(e))
+		return []
+
+def __getUserHistoryFormatted__(username):
+	# Un diccionario en el que agrupamos según
+	# la fecha, los articulos que se han comprado en dicha fecha
+	if not __isUser__(username):
+		return []
+
+	catalogue_data = __getCatalogue__()
+	# Leemos el historial del usuario
+	folder = os.path.join(app.root_path,'usuarios/'+username)
+	print(os.path.join(folder, 'history.json'))
+	try:
+		with open(os.path.join(folder, 'history.json'), encoding="utf-8") as f:
+			date_history = {}
 			user_history = f.read()
 			user_history = json.loads(user_history)
 			# Cada elemento de user_history contiene el id de la pelicula, la fecha de compra
@@ -105,11 +128,17 @@ def __getUserHistory__(username):
 					if film['id'] == filmID:
 						item['film'] = film
 						break
-			return user_history
+
+				if item['date'] not in date_history:
+					date_history[item['date']] = []
+				date_history[item['date']].append(item)
+
+
+			return date_history
 	except Exception as e:
 		# Si el fichero no existe, el usuario no tiene nada en el historial
 		# Imprimimos por si acaso es otro tipo de error
-		print('Excepcion en __getUserHistory__:\n{}'.format(e))
+		print('Excepcion en __getUserHistoryFormatted__:\n{}'.format(e))
 		return []
 
 @app.route("/")
@@ -344,7 +373,7 @@ def basket():
 	if request.method == 'GET':
 		for film in session['shopping_cart']:
 			price += film['price']*film['quantity']
-			price = format(price, '.2f')
+			price = round(price, 2)
 		return render_template('basket.html', user=__getUser__(), basket=__getBasket__(), price=price)
 
 	if request.method == 'POST':
@@ -356,23 +385,25 @@ def basket():
 			price += film['price']*film['quantity']
 
 		if price > user['cash']:
-			error = 'Not enough cash in your acount'
+			error = 'Not enough cash in your acount ({}$)'.format(__getUser__()['cash'])
 			return render_template('basket.html', user=__getUser__(), basket=__getBasket__(), price=price, error=error)
 
 		else:
 			user['cash'] -= price
+			user['cash'] = round(user['cash'], 2)
 			for film in session['shopping_cart']:
 				film_data = {}
 				film_data['filmId'] = film['id']
 				film_data['price'] = film['price']*film['quantity']
 				film_data['quantity'] = film['quantity']
-				film_data['date'] = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+				film_data['date'] = datetime.now().strftime("%m/%d/%Y")
+				film_data['time'] = datetime.now().strftime("%H:%M:%S")
 				history.append(film_data)
 
 
 			session['shopping_cart'] = []
 			folder = os.path.join(app.root_path,'usuarios/'+name)
-			with open(os.path.join(folder, 'data.dat'), 'w', encoding='utf-8') as f:
+			with open(os.path.join(folder, 'datos.dat'), 'w', encoding='utf-8') as f:
 				json.dump(user, f)
 			with open(os.path.join(folder, 'history'+'.json'), 'w', encoding='utf-8') as f:
 				json.dump(history, f)
@@ -389,7 +420,7 @@ def cash():
 	session['user'] = user
 
 	folder = os.path.join(app.root_path,'usuarios/'+user['name'])
-	with open(os.path.join(folder, 'data.dat'), 'w', encoding='utf-8') as f:
+	with open(os.path.join(folder, 'datos.dat'), 'w', encoding='utf-8') as f:
 		json.dump(user, f)
 
 	return redirect(url_for('history'))
@@ -403,7 +434,7 @@ def logout():
 def history():
 	return render_template('history.html',
 	 						user=__getUser__(),
-							history=__getUserHistory__(session['user']['name']),
+							history=__getUserHistoryFormatted__(session['user']['name']),
 							basket=__getBasket__())
 
 # Devolvemos un numero aleatorio de usuarios logeados en la plataforma
