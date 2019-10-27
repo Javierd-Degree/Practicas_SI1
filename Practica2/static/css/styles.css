@@ -40,19 +40,27 @@ body, html{
 }
 
 	/* CDdede */
+	.title_div{
+		padding: 20px;
+		cursor: pointer;
+		align-self: center;
+	}
+
 	.title {
 		font-family: 'Crete Round', serif;
 		font-size: 32pt;
 		font-weight: 400;
 		color: rgb(244, 185, 66);
-		padding: 20px;
-		cursor: pointer;
-		opacity: 0.85;
-		align-self: center;
+		opacity: 0.85;	
 	}
 
 	.title:hover{
 		opacity: 1.0;
+	}
+
+	#numLoggedUsers{
+		color: white;
+		opacity: 0.9;
 	}
 
 	/* Login and register button */
