@@ -8,8 +8,6 @@ import re
 from datetime import datetime
 
 app = Flask(__name__)
-# TODO Eliminar esta ultima linea
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = '\x18\x19\xc3q\xfa\xb8\x80v\x1abf\xd8\xfd%(G\x95\xd7\xae\x9bv\xb0d\xf4'
 DATA_FOLDER = os.path.join(app.root_path,'data/')
 
@@ -233,7 +231,7 @@ def register():
 	else:
 		if 'name' in request.form and 'password' in request.form and \
 			'mail' in request.form and 'creditCard' in request.form:
-			# TODO Validar los datos
+
 			name = request.form.get('name')
 			password = request.form.get('password')
 			mail = request.form.get('mail')
@@ -326,7 +324,6 @@ def login():
 
 @app.route("/addToBasket/<int:id>", methods=['GET', 'POST'])
 def addToBasket(id):
-	# TODO: Avisar sutilmente de que se ha añadido a la cesta
 	dFilter = lambda x: x['id'] == id
 
 	catalogue_data = __getCatalogue__()
@@ -343,7 +340,6 @@ def removeFromBasket(id):
 
 @app.route("/incCount/<int:id>", methods=['GET', 'POST'])
 def incCount(id):
-	# TODO: Avisar sutilmente de que se ha añadido a la cesta
 	dFilter = lambda x: x['id'] == id
 
 	catalogue_data = __getCatalogue__()
@@ -355,7 +351,6 @@ def incCount(id):
 
 @app.route("/change_quant/<int:id>", methods=['GET', 'POST'])
 def change_quant(id):
-	# TODO: Avisar sutilmente de que se ha añadido a la cesta
 	if 'quant' in request.args:
 		quant = request.args.get('quant')
 		quant = int(quant)
