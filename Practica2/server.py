@@ -38,12 +38,14 @@ def __getBasket__():
 	# session['basket'] stores a list of Films stored as in data/catalogue.json
 	if 'shopping_cart' not in session:
 		session['shopping_cart'] = []
+		session.modified=True
 	return session['shopping_cart']
 
 def __addToBasket__(item):
 	if 'shopping_cart' not in session:
 		session['shopping_cart'] = [item]
 		session['shopping_cart'][0]['quantity'] = 1
+		session.modified=True
 	else:
 		flag = 0
 		items = session['shopping_cart']
@@ -56,10 +58,12 @@ def __addToBasket__(item):
 			items.append(item)
 			items[len(items)-1]['quantity'] = 1
 		session['shopping_cart'] = items
+		session.modified=True
 
 def __removeFromBasket__(item):
 	if 'shopping_cart' not in session:
 		session['shopping_cart'] = []
+		session.modified=True
 	else:
 		basket = session['shopping_cart']
 		for i in range(len(basket)):
@@ -68,10 +72,12 @@ def __removeFromBasket__(item):
 				break
 
 		session['shopping_cart'] = basket
+		session.modified=True
 
 def __removeOneFromBasket__(item):
 	if 'shopping_cart' not in session:
 		session['shopping_cart'] = []
+		session.modified=True
 	else:
 		basket = session['shopping_cart']
 		for i in range(len(basket)):
@@ -83,6 +89,7 @@ def __removeOneFromBasket__(item):
 				break
 
 		session['shopping_cart'] = basket
+		session.modified=True
 
 def __getUserHistory__(username):
 	if not __isUser__(username):
@@ -221,6 +228,7 @@ def register():
 	if request.method == 'GET':
 		# Si el usuario va a la pagina de registrarse, se deslogea
 		session['user'] = None
+		session.modified=True
 		return render_template('register.html', basket=__getBasket__())
 	else:
 		if 'name' in request.form and 'password' in request.form and \
@@ -261,6 +269,7 @@ def register():
 				json.dump(user, f)
 
 			session['user'] = user
+			session.modified=True
 			return redirect(url_for('index'))
 
 		else:
@@ -307,6 +316,7 @@ def login():
 				return render_template('login.html', error='Incorrect password', basket=__getBasket__())
 
 			session['user'] = user
+			session.modified=True
 			# Add a cookie to store the last logged users' name
 			resp = make_response(redirect(url_for('index')))
 			resp.set_cookie('username', name)
@@ -357,6 +367,7 @@ def change_quant(id):
 				if basket[i]['id'] == id:
 					basket[i]['quantity'] = quant
 					session['shopping_cart'] = basket
+					session.modified=True
 					break
 			print(basket[i]['id'])
 	return redirect(url_for('basket'))
@@ -402,6 +413,7 @@ def basket():
 
 
 			session['shopping_cart'] = []
+			session.modified=True
 			folder = os.path.join(app.root_path,'usuarios/'+name)
 			with open(os.path.join(folder, 'datos.dat'), 'w', encoding='utf-8') as f:
 				json.dump(user, f)
@@ -418,6 +430,7 @@ def cash():
 	# Redondeamos a dos decimales
 	user['cash'] = round(user['cash'], 2)
 	session['user'] = user
+	session.modified=True
 
 	folder = os.path.join(app.root_path,'usuarios/'+user['name'])
 	with open(os.path.join(folder, 'datos.dat'), 'w', encoding='utf-8') as f:
@@ -428,6 +441,7 @@ def cash():
 @app.route("/logout", methods=['GET', 'POST'])
 def logout():
 	session['user'] = None
+	session.modified=True
 	return redirect(url_for('index'))
 
 @app.route("/history", methods=['GET'])
