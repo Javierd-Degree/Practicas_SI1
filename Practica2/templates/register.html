@@ -1,5 +1,6 @@
 {% extends "index.html" %}
 {% block content %}
+
   <div id="register">
 
     <h2>Register</h2>
@@ -22,7 +23,10 @@
 
           <div class="TextTextbox">
             <h4>Password:</h4>
-            <input class="regTextbox" type="password" name="password" id="password" onkeyup='checkPassword();'>
+            <input class="regTextbox" type="password" name="password" id="password" onkeyup='passwordCheckAndStrength();'>
+            <div id="meter">
+            	<div id="meter-value" class="meter-value-0"></div>
+            </div>
             <span id='lenMessage'></span>
           </div>
 
@@ -50,6 +54,9 @@
       </div>
     </form>
   </div>
+
+  <!-- Script to check if the password is secure enough -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
 
   <script>
   	var checkName = function(){
@@ -143,5 +150,47 @@
         	document.getElementById('regForm').submit();
         }
     }
+
+	
+	function passwordStrength() {
+		var password = document.getElementById('password');
+		var meter = document.getElementById('meter-value');
+		var val = password.value;
+		var result = zxcvbn(val);
+
+		/* Update the password strength meter */
+		switch (result.score){
+			case 0:
+				console.log("Clase 0");
+				meter.className = "meter-value-0";
+				break;
+			case 1:
+				console.log("Clase 1");
+				meter.className = "meter-value-1";
+				break;
+			case 2:
+				console.log("Clase 2");
+				meter.className = "meter-value-2";
+				break;
+			case 3:
+				console.log("Clase 3");
+				meter.className = "meter-value-3";
+				break;
+			case 4:
+				console.log("Clase 4");
+				meter.className = "meter-value-4";
+				break;
+		}
+
+
+
+		console.log(result.score);
+	}
+
+	function passwordCheckAndStrength(){
+		passwordStrength();
+		checkPassword();
+	}
+
   </script>
 {% endblock %}

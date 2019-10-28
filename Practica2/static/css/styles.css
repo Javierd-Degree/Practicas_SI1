@@ -468,6 +468,46 @@ h5{
 			}
 
 
+		#meter{
+			width: 100%;
+			height: 6px;
+			border-radius: 3px;
+			background-color: rgba(0, 0, 0, 0.1);
+		}
+
+		.meter-value-0, .meter-value-1,
+		.meter-value-2, .meter-value-3, .meter-value-4{
+			width: 100%;
+			height: 6px;
+			border-radius: 3px;
+		}
+
+		.meter-value-0{
+			width: 12%;
+			background: #F44336;
+		}
+
+		.meter-value-1{
+			width: 25%;
+			background: #FF5722;
+		}
+
+		.meter-value-2{
+			width: 50%;
+			background: #FFEB3B;
+		}
+
+		.meter-value-3{
+			width: 75%;
+			background: #CDDC39;
+		}
+
+		.meter-value-4{
+			width: 100%;
+			background: #4CAF50;
+		}
+
+
 
 /* Search results and hitory screen */
 .result_list, .history_list{
