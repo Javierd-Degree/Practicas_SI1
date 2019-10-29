@@ -1,0 +1,52 @@
+{% extends "index.html" %}
+{% block content %}
+  <div id="register">
+
+    <h2>Login</h2>
+
+    <form name="login" action={{ url_for('login') }} method="post" id="logForm">
+      <div class="mainContainer">
+        <div class="verContainer">
+
+          <div class="TextTextbox">
+            <h4>User Name:</h4>
+            <input class="regTextbox" type="text" name="name" value={{ username or '' }}>
+          </div>
+
+          <div class="TextTextbox">
+            <h4>Password:</h4>
+            <input class="regTextbox" type="password" name="password" id="password">
+          </div>
+
+        <br> <p class="error" id="messageBut">{{ '' or error }}</p>
+        </div>
+
+        <div class="verContainer">
+          <div class="verExpandableContainer"></div>
+          <div class="verButtonContainer">
+            <input class="regButton" type="button" value="Sign in" id="sendf" onclick='formComplete();'>
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+  <script>
+    var formComplete = function(){
+        var form = document.forms["login"].elements;
+        var available = true;
+
+        for (var i = 0; i < form.length; i++) {
+            if (form[i].value.length == 0) available = false;
+        }
+
+        if (available == false) {
+        	document.getElementById('messageBut').style.color = 'red';
+        	document.getElementById('messageBut').innerHTML = 'Must complete both fields.';
+        } else {
+        	document.getElementById('logForm').submit();
+        }
+    }
+  </script>
+{% endblock %}
