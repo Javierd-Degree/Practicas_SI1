@@ -28,6 +28,7 @@ Para ejecutar el script: `psql -U alumnodb si1 -f actualiza.sql`
 - La tabla *customers* mezcla la información del usuario con información de su tarjeta de crédito, que creemos estaría mejor guardada en una tabla distinta, con in id como primary key, de forma que desde *customers* se referenciase a dicha tabla.
 - La tabla *inventory* usa como primary key el *prod_id*, que se refiere a un elemento de la tabla *product* (aunque no se establece como foreign key, lo que es un error). Por tanto, hay una relación uno a uno entre ambas tablas, y ambas están indexadas por el mismo atributo: es el equivalente a tener una única tabla que una las dos. **---???---** 
 - La tabla *orderdetail* tiene un atributo *orderid* que hace referencia a una primary key de *orders*, sin embargo, no está señalado como foreign key. Además, no tiene ninguna primary key o index, lo que dificulta y raleentiza el acceso a la información.
+- La tabla *orderdetail* tiene un atributo *prod_id* que hace referencia a una primary key de *products*, sin embargo, no está señalado como foreign key. 
 - La tabla *imdb_actormovies* no utiliza foreign key para referirse a *actorid* y a *movieid*, lo que evita que sea una relación, y puede provocar fallos de integridad bastante graves. Además, no está indexada de ninguna forma.
 - Las tablas *imdb_moviecountries*, *imdb_moviegenres* e *imdb_movielanguages* están representados como atributos múltiples, no como relaciones, lo que provoca que el mismo país, género e idioma pueda estar repetido múltiples veces, y además impide desarrollar correctamente el modelo entidad-relación.
 
@@ -42,7 +43,8 @@ Para ejecutar el script: `psql -U alumnodb si1 -f actualiza.sql`
 
 #### Tabla orderdetail
 
-- Establecer el atributo *orderid* como foreign key, pues referencia a una primary key de *orders* y usarlo además como index, pues siempre que busquemos en dicha tabla va a ser por *orderid*
+- Establecer el atributo *orderid* como foreign key, pues referencia a una primary key de *orders* y usarlo además como index, pues siempre que busquemos en dicha tabla va a ser por *orderid*.
+- Establecer el atributo *prod_id* como foreign key que referencia a un *prod_id* de *products*.
 
 #### Tablas inventory y product
 
@@ -65,3 +67,15 @@ Para ejecutar el script: `psql -U alumnodb si1 -f actualiza.sql`
 
 ### Diagrama final
 
+
+
+
+
+### Ejercicio C - setPrice.sql
+
+Tenemos que completar la columna price de *orderdetail*. Una fila de esta tabla tiene un *orderid* y un *prod_id*. 
+
+- El *prod_id* en la tabla *products* contiene el precio actual del artículo.
+- El *orderid* en la tabla *orders* contiene la fecha de compra.
+
+Calculamos n = años(fecha_actual - fecha_orderid). El precio es precio_prodid/(1.2)^n

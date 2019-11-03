@@ -30,6 +30,9 @@ ALTER TABLE customers ADD CONSTRAINT creditcard_fkey FOREIGN KEY (creditcard)
 ALTER TABLE orderdetail ADD CONSTRAINT orderid_fkey FOREIGN KEY (orderid) 
 	REFERENCES orders (orderid) MATCH SIMPLE;
 CREATE INDEX orderid_index ON orderdetail(orderid);
+-- Establecer prod_id como FK
+ALTER TABLE orderdetail ADD CONSTRAINT prod_id_fkey FOREIGN KEY (prod_id) 
+	REFERENCES products (prod_id) MATCH SIMPLE;
 
 
 -- ===== Inventory y product ¿¿??? =====
@@ -54,7 +57,7 @@ ALTER TABLE imdb_actormovies ADD CONSTRAINT triple_pkey PRIMARY KEY(movieid, act
 
 -- ===== imdb_moviecountries =====
 -- Creamos una tabla con id que actua como PK y el pais
-CREATE TABLE countries (countryid SERIAL PRIMARY KEY, name CHARACTER VARYING(32) NOT NULL);
+CREATE TABLE countries (countryid SERIAL PRIMARY KEY, name CHARACTER VARYING(32) UNIQUE NOT NULL);
 INSERT INTO countries(name) SELECT DISTINCT(country) from imdb_moviecountries;
 -- Modificamos la tabla imdb_moviecountries para añadir un countryid y eliminar country
 ALTER TABLE imdb_moviecountries ADD COLUMN countryid INTEGER;
@@ -66,7 +69,7 @@ ALTER TABLE imdb_moviecountries DROP COLUMN country;
 
 -- ===== imdb_moviegenres =====
 -- Creamos una tabla con id que actua como PK y el genero
-CREATE TABLE genres (genreid SERIAL PRIMARY KEY, name CHARACTER VARYING(32) NOT NULL);
+CREATE TABLE genres (genreid SERIAL PRIMARY KEY, name CHARACTER VARYING(32) UNIQUE NOT NULL);
 INSERT INTO genres(name) SELECT DISTINCT(genre) from imdb_moviegenres;
 -- Modificamos la tabla imdb_moviegenres para añadir un genreid y eliminar genre
 ALTER TABLE imdb_moviegenres ADD COLUMN genreid INTEGER;
@@ -77,7 +80,7 @@ ALTER TABLE imdb_moviegenres DROP COLUMN genre;
 
 -- ===== imdb_movielanguages =====
 -- Creamos una tabla con id que actua como PK y el language
-CREATE TABLE languages (languageid SERIAL PRIMARY KEY, name CHARACTER VARYING(32) NOT NULL);
+CREATE TABLE languages (languageid SERIAL PRIMARY KEY, name CHARACTER VARYING(32) UNIQUE NOT NULL);
 INSERT INTO languages(name) SELECT DISTINCT(language) from imdb_movielanguages;
 -- Modificamos la tabla imdb_movielanguages para añadir un languageid y eliminar language
 ALTER TABLE imdb_movielanguages ADD COLUMN languageid INTEGER;
