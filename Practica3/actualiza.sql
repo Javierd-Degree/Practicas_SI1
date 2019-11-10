@@ -87,3 +87,7 @@ UPDATE imdb_movielanguages t1 SET languageid=t2.languageid FROM languages t2 WHE
 ALTER TABLE imdb_movielanguages ADD CONSTRAINT languageid_fkey FOREIGN KEY (languageid)
 	REFERENCES languages (languageid);
 ALTER TABLE imdb_movielanguages DROP COLUMN language;
+
+-- ===== ALERTAS =====
+-- Creamos una nueva tabla llamada alertas
+CREATE TABLE alertas (alertid SERIAL PRIMARY KEY, descripcion CHARACTER VARYING(256) NOT NULL, alertdate TIMESTAMP);
