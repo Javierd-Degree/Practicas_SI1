@@ -1,0 +1,68 @@
+{% extends "index.html" %}
+{% block content %}
+  <div id="detail">
+    <!-- Rectangle -->
+    <img id="filmImg" src={{ url_for('data', filename='images/'+film['image']) }} alt="The image could not be shown.">
+    <!-- image 2 -->
+    <div class="info">
+      <h2>{{film['title']}}</h2>
+
+      <div class="mainContainer">
+        <div class="verExpandableContainer">
+          <div class="infoContainer">
+            <h4>Director: </h4>
+            <h5>{{film['director']}}</h5>
+          </div>
+
+          <div class="infoContainer">
+            <h4>Year: </h4>
+            <h5>{{film['year']}}</h5>
+          </div>
+
+          <div class="infoContainer">
+            <h4>Duration: </h4>
+            <h5>{{film['duration']}}</h5>
+          </div>
+
+          <div class="infoContainer">
+            <h4>Genre: </h4>
+            <h5>{{category['name']}}</h5>
+          </div>
+
+          <div class="infoContainer">
+            <h4>Language: </h4>
+            <h5>{{film['']}}</h5>
+          </div>
+
+          <div class="verInfoContainer">
+            <h4>Starring: </h4>
+            <h5>{{film['actors']}}</h5>
+          </div>
+
+        </div>
+
+        <div class="verInfoContainer">
+
+          <div class="verExpandableContainer">
+
+            <div class="verInfoContainer">
+              <h4>Synopsis: </h4>
+              <h5>{{film['synopsis']}}</h5>
+            </div>
+
+            <div class="infoContainer">
+              <h4>Price: </h4>
+              <h5>{{film['price']|string + '$'}}</h5>
+            </div>
+
+          </div>
+
+          <form action={{ url_for('addToBasket', id=film['id']) }} class="verButtonContainer">
+            <input class="addButton" type="submit" value="Add to Basket">
+          </form>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
