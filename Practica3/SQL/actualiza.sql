@@ -12,6 +12,17 @@ ALTER TABLE customers ADD CONSTRAINT customers_pkey PRIMARY KEY(email);
 ALTER TABLE customers DROP COLUMN IF EXISTS customerid;
 ALTER TABLE customers DROP COLUMN IF EXISTS gender;
 ALTER TABLE customers DROP COLUMN IF EXISTS income;
+ALTER TABLE customers DROP COLUMN IF EXISTS firstname;
+ALTER TABLE customers DROP COLUMN IF EXISTS lastname;
+ALTER TABLE customers DROP COLUMN IF EXISTS address1;
+ALTER TABLE customers DROP COLUMN IF EXISTS address2;
+ALTER TABLE customers DROP COLUMN IF EXISTS city;
+ALTER TABLE customers DROP COLUMN IF EXISTS state;
+ALTER TABLE customers DROP COLUMN IF EXISTS zip;
+ALTER TABLE customers DROP COLUMN IF EXISTS country;
+ALTER TABLE customers DROP COLUMN IF EXISTS region;
+ALTER TABLE customers DROP COLUMN IF EXISTS phone;
+
 -- Creamos columna para el cash
 ALTER TABLE customers ADD COLUMN cash INTEGER NOT NULL DEFAULT 0;
 -- Creamos la base de datos para las tarjetas y la rellenamos
@@ -26,10 +37,24 @@ ALTER TABLE customers ADD CONSTRAINT creditcard_fkey FOREIGN KEY (creditcard)
 	REFERENCES creditcard (creditcard) MATCH SIMPLE;
 
 -- ===== ORDERDETAIL =====
+-- Renombramos la tabla para crear una nueva igual, pero sin repeticiones en el par
+-- orderid, prod_id
+ALTER TABLE orderdetail RENAME TO  orderdetailaux;
+CREATE TABLE orderdetail(
+  orderid integer NOT NULL,
+  prod_id integer NOT NULL,
+  price numeric,
+  quantity integer NOT NULL
+);
+INSERT INTO orderdetail SELECT orderid, prod_id, MIN(price), SUM(quantity)
+	FROM orderdetailaux GROUP BY orderid, prod_id;
+-- Borramos la base de datos auxiliar
+DROP TABLE orderdetailaux;
+-- Establecer orderid, prod_id como PK
+ALTER TABLE orderdetail ADD CONSTRAINT orderdetail_pkey PRIMARY KEY (orderid, prod_id);
 -- Establecer orderid como FK y usarlo como index
 ALTER TABLE orderdetail ADD CONSTRAINT orderid_fkey FOREIGN KEY (orderid)
 	REFERENCES orders (orderid) MATCH SIMPLE;
-CREATE INDEX orderid_index ON orderdetail(orderid);
 -- Establecer prod_id como FK
 ALTER TABLE orderdetail ADD CONSTRAINT prod_id_fkey FOREIGN KEY (prod_id)
 	REFERENCES products (prod_id) MATCH SIMPLE;
@@ -91,3 +116,9 @@ ALTER TABLE imdb_movielanguages DROP COLUMN language;
 -- ===== ALERTAS =====
 -- Creamos una nueva tabla llamada alertas
 CREATE TABLE alertas (alertid SERIAL PRIMARY KEY, descripcion CHARACTER VARYING(256) NOT NULL, alertdate TIMESTAMP);
+
+-- ===== VIEWS =====
+-- Vista usada por getTopVentas
+CREATE VIEW getTopVentasView AS (SELECT prod_id, DATE_PART('year', orderdate) as date, quantity FROM orderdetail NATURAL JOIN orders);
+-- Vista usada por setOrderAmount
+CREATE VIEW setOrderAmountView AS (SELECT orderdetail.orderid AS orderid, SUM(orderdetail.price*orderdetail.quantity) AS price FROM orderdetail WHERE orderdetail.orderid=orderid GROUP BY orderid);

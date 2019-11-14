@@ -11,10 +11,12 @@ Para ejecutar el script: `psql -U alumnodb si1 -f actualiza.sql`
 - El usuario se loggea usando el email, no el nombre de usuario.
 
 
-# Memoria
+Javier Delgado del Cerro y Javier López Cano
 
+# Memoria
 ### Diseño inicial dado
-![][diagram.png]
+
+![](diagram.png)
 
 ### Ventajas de diseño
 
@@ -26,7 +28,7 @@ Para ejecutar el script: `psql -U alumnodb si1 -f actualiza.sql`
 
 - La tabla *customers* no tiene ese
 - La tabla *customers* mezcla la información del usuario con información de su tarjeta de crédito, que creemos estaría mejor guardada en una tabla distinta, con in id como primary key, de forma que desde *customers* se referenciase a dicha tabla.
-- La tabla *inventory* usa como primary key el *prod_id*, que se refiere a un elemento de la tabla *product* (aunque no se establece como foreign key, lo que es un error). Por tanto, hay una relación uno a uno entre ambas tablas, y ambas están indexadas por el mismo atributo: es el equivalente a tener una única tabla que una las dos. **---???---**
+- La tabla *inventory* usa como primary key el *prod_id*, que se refiere a un elemento de la tabla *product* (aunque no se establece como foreign key, lo que es un error). Por tanto, hay una relación uno a uno entre ambas tablas, y ambas están indexadas por el mismo atributo: es el equivalente a tener una única tabla que una las dos. Lo vamos a dejar así por si en un futuro queremos añadir más información al inventario, por ejemplo, el numero de copias de la película según el idioma o el país.
 - La tabla *orderdetail* tiene un atributo *orderid* que hace referencia a una primary key de *orders*, sin embargo, no está señalado como foreign key. Además, no tiene ninguna primary key o index, lo que dificulta y raleentiza el acceso a la información.
 - La tabla *orderdetail* tiene un atributo *prod_id* que hace referencia a una primary key de *products*, sin embargo, no está señalado como foreign key.
 - La tabla *imdb_actormovies* no utiliza foreign key para referirse a *actorid* y a *movieid*, lo que evita que sea una relación, y puede provocar fallos de integridad bastante graves. Además, no está indexada de ninguna forma.
@@ -37,18 +39,18 @@ Para ejecutar el script: `psql -U alumnodb si1 -f actualiza.sql`
 #### Tabla customers
 
 - Establecer como primary key el email, pues es lo que usamos para loggear a los usuarios, y nos permitirá que este login sea mucho más rápido y eficiente. No se puede emplear el username porque hay muchos repetidos en la base de datos.
-- Eliminar columnas innecesarias como: **---???---** (customerid, gender, income)
+- Eliminar columnas innecesarias como: customerid, gender, income y otros campos que no pedimos en nuestro regitro en la web.
 - Creamos una nueva columna *cash* que refleja el saldo del usuario, e inicializamos todos a cero.
-- Almacenar las tarjetas de crédito y su información en una tabla aparte, de forma que en *consumer* simplemente tenemos un foreign key con el numero de la tarjeta. **---???---**
+- Almacenar las tarjetas de crédito y su información en una tabla aparte, de forma que en *consumer* simplemente tenemos un foreign key con el numero de la tarjeta.
 
 #### Tabla orderdetail
-
+- Hacer que el par (*orderid*, *prod_id*) sea una primary key de la tabla. De esta forma, tenemos también un índice en este par, que nos permite buscar por oderid de forma más eficiente.
 - Establecer el atributo *orderid* como foreign key, pues referencia a una primary key de *orders* y usarlo además como index, pues siempre que busquemos en dicha tabla va a ser por *orderid*.
 - Establecer el atributo *prod_id* como foreign key que referencia a un *prod_id* de *products*.
 
-#### Tablas inventory y product
+#### Tabla inventory
 
-- Unir las tablas o hacer que *prod_id* de *inventory* sea un foreign key **---???---**
+- Hacer que *prod_id* de *inventory* sea un foreign key que referencia a la primary key de products.
 
 #### Tabla orders
 
@@ -65,9 +67,10 @@ Para ejecutar el script: `psql -U alumnodb si1 -f actualiza.sql`
 
 - Creamos tres tablas de países, géneros e idiomas cada una con una columna *id* como primary key, y luego una relación entre cada una de las tablas y la película a través de *movieid*. De esta forma, satisfacemos el diagrama entidad relación, y evitamos posibles problemas al repetir países y géneros continuamente (podrían estar escritos de forma ligeramente distinta y provocar que algunas queries no funcionases bien)
 
-### Diseño final
+### Diagrama final
 
-![][diagram_final.png]
+![](diagram_final.png)
+
 
 
 
