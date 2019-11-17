@@ -10,6 +10,14 @@ Para ejecutar el script: `psql -U alumnodb si1 -f actualiza.sql`
 
 - El usuario se loggea usando el email, no el nombre de usuario.
 
+- Tenemos que quitar el precio de las peliculas de la miniatura, porque depende del producto: puede ser blueray, cd, etc.
+
+
+
+
+
+
+
 
 Javier Delgado del Cerro y Javier López Cano
 
@@ -31,6 +39,7 @@ Javier Delgado del Cerro y Javier López Cano
 - La tabla *inventory* usa como primary key el *prod_id*, que se refiere a un elemento de la tabla *product* (aunque no se establece como foreign key, lo que es un error). Por tanto, hay una relación uno a uno entre ambas tablas, y ambas están indexadas por el mismo atributo: es el equivalente a tener una única tabla que una las dos. Lo vamos a dejar así por si en un futuro queremos añadir más información al inventario, por ejemplo, el numero de copias de la película según el idioma o el país.
 - La tabla *orderdetail* tiene un atributo *orderid* que hace referencia a una primary key de *orders*, sin embargo, no está señalado como foreign key. Además, no tiene ninguna primary key o index, lo que dificulta y raleentiza el acceso a la información.
 - La tabla *orderdetail* tiene un atributo *prod_id* que hace referencia a una primary key de *products*, sin embargo, no está señalado como foreign key.
+- La tabla *imdb_movies* no tiene ningún tipo de referencia a una carátula de la película.
 - La tabla *imdb_actormovies* no utiliza foreign key para referirse a *actorid* y a *movieid*, lo que evita que sea una relación, y puede provocar fallos de integridad bastante graves. Además, no está indexada de ninguna forma.
 - Las tablas *imdb_moviecountries*, *imdb_moviegenres* e *imdb_movielanguages* están representados como atributos múltiples, no como relaciones, lo que provoca que el mismo país, género e idioma pueda estar repetido múltiples veces, y además impide desarrollar correctamente el modelo entidad-relación.
 
@@ -55,8 +64,11 @@ Javier Delgado del Cerro y Javier López Cano
 #### Tabla orders
 
 - Crear una columna *useremail* que contenga el email (que actua como identificador) del usuario que realizó el pedido, y establecerlo como un foreign key.
-
 - Borrar la columna *customerid*, que ya no tiene sentido.
+
+#### Tabla imdb_movies
+
+- Añadimos una columna *image* que contiene la dirección de la carátula de la película. Obligamos a que sea no vacía y llenamos todas las disponibles de una imagen por defecto.
 
 #### Tabla imdb_actormovies
 

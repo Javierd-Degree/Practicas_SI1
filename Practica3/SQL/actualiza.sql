@@ -70,6 +70,10 @@ ALTER TABLE orders ADD CONSTRAINT useremail_fkey FOREIGN KEY (useremail)
 	REFERENCES customers (email);
 ALTER TABLE orders DROP COLUMN IF EXISTS customerid;
 
+-- ===== IMDB_MOVIES =====
+-- Añadimos una columna llamada image y la rellenamos con la dirección una imagen por defecto
+ALTER TABLE imdb_movies ADD COLUMN image CHARACTER VARYING(256) NOT NULL CONSTRAINT df_movies_image DEFAULT 'default.jpg';
+
 -- ===== IMDB_ACTORMOVIES =====
 -- Hacemos que actorid y movieid sean FKs
 ALTER TABLE imdb_actormovies ADD CONSTRAINT actorid_fkey FOREIGN KEY (actorid)
@@ -94,6 +98,7 @@ ALTER TABLE imdb_moviecountries DROP COLUMN country;
 -- ===== imdb_moviegenres =====
 -- Creamos una tabla con id que actua como PK y el genero
 CREATE TABLE genres (genreid SERIAL PRIMARY KEY, name CHARACTER VARYING(32) UNIQUE NOT NULL);
+INSERT INTO genres(genreid, name) VALUES (0, 'All categories');
 INSERT INTO genres(name) SELECT DISTINCT(genre) from imdb_moviegenres;
 -- Modificamos la tabla imdb_moviegenres para añadir un genreid y eliminar genre
 ALTER TABLE imdb_moviegenres ADD COLUMN genreid INTEGER;

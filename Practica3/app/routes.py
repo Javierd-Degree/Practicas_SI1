@@ -26,11 +26,6 @@ def __getCatalogue__():
 		catalogue_data = f.read()
 		return json.loads(catalogue_data)
 
-def __getCategories__():
-	with open(os.path.join(app.root_path,'data/categories.json'), encoding="utf-8") as f:
-		categories_data = f.read()
-		return json.loads(categories_data)
-
 def __getBasket__():
 	# session['basket'] stores a list of Films stored as in data/catalogue.json
 	if 'shopping_cart' not in session:
@@ -151,10 +146,9 @@ def index():
 	message = None
 	if 'message' in request.args:
 		message = request.args.get('message')
-	catalogue_data = __getCatalogue__()
-	categories_data = __getCategories__()
-	recommended_films = catalogue_data
-	best_seller_films = catalogue_data
+	categories_data = database.db_getCategories()
+	recommended_films = database.db_getRecommendedFilms()
+	best_seller_films = database.db_getTopVentasFilms()
 	return render_template('home.html', user=__getUser__(), basket=__getBasket__(),
 							recommended_films=recommended_films,
 							best_seller_films=best_seller_films,
@@ -163,12 +157,13 @@ def index():
 
 @app.route("/search",methods=['GET', 'POST'])
 def search():
-	catalogue_data = __getCatalogue__()
-	categories_data = __getCategories__()
+	categories_data = database.db_getCategories()
 
 	term = None
 	if 'term' in request.args:
 		term = request.args.get('term')
+		if term == '':
+			term = None
 
 	category = None
 	# Si no se ha indicado una nueva categoria, mantenemos la anterior
@@ -180,24 +175,21 @@ def search():
 	# Cargamos la categoria que corresponda
 	if 'prev_category' in request.args or 'category' in request.args:
 		if category == 0:
+			print(category)
 			category = None
 		else:
 			l = list(filter(lambda x: x['id'] == category, categories_data))
 			category = l[0]
 
 
-
-	sFilter = lambda x: True
 	if category != None and term != None:
-		categoryFilter = lambda x: x['category'] == category['id']
-		termFilter = lambda x: term.lower() in x['title'].lower()
-		sFilter = lambda x: termFilter(x) and categoryFilter(x)
+		catalogue_data = database.db_getFilmsByTitleAndCategoryId(term, category['id'])
 	elif category != None:
-		sFilter = lambda x: x['category'] == category['id']
+		catalogue_data = database.db_getFilmsByCategoryId(category['id'])
 	elif term != None:
-		sFilter = lambda x: term.lower() in x['title'].lower()
-
-	catalogue_data = list(filter(sFilter, catalogue_data))
+		catalogue_data = database.db_getFilmsByTitle(term)
+	else:
+		return redirect(url_for('index'))
 
 	return render_template('search.html', user=__getUser__(), basket=__getBasket__(), term=term, category=category, results=catalogue_data, categories_data=categories_data)
 
@@ -209,7 +201,7 @@ def detail(id):
 	dFilter = lambda x: x['id'] == id
 
 	catalogue_data = __getCatalogue__()
-	categories_data = __getCategories__()
+	categories_data = database.db_getCategories()
 
 	l = list(filter(dFilter, catalogue_data))
 	film = l[0]

@@ -1,10 +1,10 @@
 CREATE OR REPLACE FUNCTION getTopVentas(minDate NUMERIC)
-    RETURNS TABLE(Año DOUBLE PRECISION, Pelicula VARCHAR, Ventas BIGINT)
+    RETURNS TABLE(movieid INTEGER, movierelease VARCHAR, image VARCHAR, Año DOUBLE PRECISION, movietitle VARCHAR, Ventas BIGINT)
 AS $$
     DECLARE
     BEGIN
-        RETURN QUERY (SELECT date, movietitle, sales FROM
-            products NATURAL JOIN imdb_movies NATURAL JOIN
+        RETURN QUERY (SELECT m.movieid, m.movierelease, m.image, date, m.movietitle, sales FROM
+            products NATURAL JOIN imdb_movies m NATURAL JOIN
             (SELECT z.date, z.prod_id, z.sales
             FROM
                 (
