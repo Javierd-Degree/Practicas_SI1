@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, text
 from sqlalchemy.sql import select
-import errors
+from app import errors
 
 # configurar el motor de sqlalchemy
 db_engine = create_engine("postgresql://alumnodb:alumnodb@localhost/si1", echo=False)
@@ -64,7 +64,7 @@ def db_login(mail, password):
 		if len(results) == 0:
 			return errors.ERROR_USER_NOT_EXIST
 
-		if results[0][1] != password:
+		if results[0][0] != password:
 			return errors.ERROR_INCORRECT_PASSWORD
 		
 		db_conn.close()
@@ -81,7 +81,7 @@ def db_login(mail, password):
 
 		return errors.ERROR
 
-def db_getUsername(mail):
+def db_getUserDict(mail):
 	# Solo debe llamarse una vez estamos seguros de que el usuario existe
 	try:
 		# Conexion a la base de datos
@@ -89,17 +89,21 @@ def db_getUsername(mail):
 		db_conn = db_engine.connect()
 		
 		# Buscamos el usuario por su email y devolvemos el nombre
-		select_user = select([db_table_users.c.username]).where(db_table_users.c.email == mail)
+		select_user = select([db_table_users.c.username, db_table_users.c.email, db_table_users.c.creditcard, db_table_users.c.cash]).where(db_table_users.c.email == mail)
 		db_result = db_conn.execute(select_user)
 		results = db_result.fetchall()
 		if len(results) == 0:
 			return None
 
-		name = results[0][0]
+		user = {}
+		user['name'] = results[0][0]
+		user['mail'] = results[0][1]
+		user['creditCard'] = results[0][2]
+		user['cash'] = results[0][3]
 		
 		db_conn.close()
 		
-		return name
+		return user
 
 	except:
 		if db_conn is not None:

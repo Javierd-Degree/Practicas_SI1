@@ -6,7 +6,7 @@ import random
 import hashlib
 import re
 from datetime import datetime
-from app import app
+from app import app, database, errors
 
 DATA_FOLDER = os.path.join(app.root_path,'data/')
 
@@ -238,11 +238,7 @@ def register():
 			creditCard = request.form.get('creditCard')
 			cash = random.randint(0, 100)
 
-			if __isUser__(name):
-				error = 'User already exists'
-				return render_template('register.html', basket=__getBasket__(), name=name, password=password,
-										mail=mail, creditCard=creditCard, error=error)
-			elif len(password) < 8:
+			if len(password) < 8:
 				error = 'Password is too short.'
 				return render_template('register.html', basket=__getBasket__(), name=name, password=password,
 										mail=mail, creditCard=creditCard, error=error)
@@ -251,20 +247,17 @@ def register():
 				return render_template('register.html', basket=__getBasket__(), name=name, password=password,
 										mail=mail, creditCard=creditCard, error=error)
 
-
-			folder = os.path.join(app.root_path,'usuarios/'+name)
-			os.mkdir(folder)
-			password = hashlib.md5(password.encode('utf-8')).hexdigest()
+			# Registramos al usuario en nuestra base de datos
+			res = database.db_registerUser(name, password, mail, creditCard, cash)
+			if res != errors.OK:
+				return render_template('register.html', basket=__getBasket__(), name=name, password=password,
+										mail=mail, creditCard=creditCard, error=errors.errorToString(res))
 
 			user = {}
 			user['name'] = name
-			user['password'] = password
 			user['mail'] = mail
 			user['creditCard'] = creditCard
 			user['cash'] = cash
-
-			with open(os.path.join(folder, 'datos.dat'), 'w+', encoding="utf-8") as f:
-				json.dump(user, f)
 
 			session['user'] = user
 			session.modified=True
@@ -294,30 +287,23 @@ def register():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
 	if request.method == 'GET':
-		username = request.cookies.get('username')
-		return render_template('login.html', username=username, basket=__getBasket__())
+		useremail = request.cookies.get('useremail')
+		return render_template('login.html', useremail=useremail, basket=__getBasket__())
 	else:
-		if 'name' in request.form and 'password' in request.form:
-			name = request.form.get('name')
+		if 'email' in request.form and 'password' in request.form:
+			email = request.form.get('email')
 			password = request.form.get('password')
-			if not __isUser__(name):
-				return render_template('login.html', error='User does not exists', basket=__getBasket__())
+			
+			res = database.db_login(email, password)
+			if res != errors.OK:
+				return render_template('login.html', error=errors.errorToString(res), basket=__getBasket__())
 
-			folder = os.path.join(app.root_path,'usuarios/'+name)
-			user = None
-			user_data = open(os.path.join(folder, 'datos.dat'), encoding="utf-8").read()
-			user = json.loads(user_data)
-			hashPassword = hashlib.md5(password.encode('utf-8')).hexdigest()
-			if user['password'] != hashPassword:
-				# La contraseña no es correcta
-				print('{}, {}'.format(user['password'], hashPassword))
-				return render_template('login.html', error='Incorrect password', basket=__getBasket__())
 
-			session['user'] = user
+			session['user'] = database.db_getUserDict(email)
 			session.modified=True
-			# Add a cookie to store the last logged users' name
+			# Add a cookie to store the last logged users' email
 			resp = make_response(redirect(url_for('index')))
-			resp.set_cookie('username', name)
+			resp.set_cookie('useremail', email)
 			return resp
 		else:
 			return render_template('login.html', error='Not enough information', basket=__getBasket__())
