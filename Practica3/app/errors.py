@@ -11,7 +11,7 @@ def errorToString(errorcode):
 		OK: 'Success',
 		ERROR_CREDITCARD: 'Credit card already in use.',
 		ERROR_EMAIL_USED: 'Email already in use.',
-		ERROR_USER_NOT_EXIST: 'User does not exist.'
+		ERROR_USER_NOT_EXIST: 'User does not exist.',
 		ERROR_INCORRECT_PASSWORD: 'Wrong password.'
 	}
 
