@@ -8,7 +8,7 @@ from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, tex
 from sqlalchemy.sql import select
 from sqlalchemy.orm import sessionmaker
 import datetime
-import errors
+from app import errors
 
 # configurar el motor de sqlalchemy
 db_engine = create_engine("postgresql://alumnodb:alumnodb@localhost/si1", echo=False)
@@ -159,8 +159,8 @@ def __filmsToArray__(cursor):
 		film['id'] = result['movieid']
 		film['title'] = result['movietitle']
 		film['image'] = result['image']
+		film['year'] = result.get('year')
 		film['synopsis'] = result['movierelease']
-		print(film)
 		films.append(film)
 
 	return films
@@ -290,3 +290,50 @@ def db_getFilmsByTitleAndCategoryId(title, categoryid):
 		print("-"*60)
 
 		return []
+
+def db_getFilmInfo(filmid):
+	try:
+		# Conexion a la base de datos
+		db_conn = None
+		db_conn = db_engine.connect()
+		
+		# Cargamos todas las peliculas de dicha categoria
+		query = "SELECT * FROM imdb_movies WHERE movieid = {} LIMIT 50".format(filmid)
+		results = db_conn.execute(query)
+		film = __filmsToArray__(results)[0] # Solo hay uno por ser movieid PK
+
+		# Tres actores principales
+		subquery = "SELECT * FROM imdb_actormovies NATURAL JOIN imdb_actors WHERE movieid = {} ORDER BY creditsposition LIMIT 3".format(filmid)
+		query = "SELECT string_agg(actorname, '. ') FROM ({}) aux GROUP BY movieid".format(subquery)
+		results = db_conn.execute(query).fetchone()
+		film['actors'] = results[0] if results is not None else 'No info available'
+
+		# Tres directores
+		subquery = "SELECT * FROM imdb_directormovies NATURAL JOIN imdb_directors WHERE movieid = {} LIMIT 3".format(filmid)
+		query = "SELECT string_agg(directorname, '. ') FROM ({}) aux GROUP BY movieid".format(subquery)
+		results = db_conn.execute(query).fetchone()
+		film['director'] = results[0] if results is not None else 'No info available'
+
+		# Tres categorias
+		subquery = "SELECT * FROM imdb_moviegenres NATURAL JOIN genres WHERE movieid = {} LIMIT 3".format(filmid)
+		query = "SELECT string_agg(name, ', ') FROM ({}) aux GROUP BY movieid".format(subquery)
+		results = db_conn.execute(query).fetchone()
+		film['categories'] = results[0] if results is not None else 'No info available'
+
+
+		# COMPROBAR
+		film['price'] = -1
+		print(film)
+		
+		db_conn.close()
+		return film
+
+	except:
+		if db_conn is not None:
+			db_conn.close()
+		print("Exception in DB access:")
+		print("-"*60)
+		traceback.print_exc(file=sys.stderr)
+		print("-"*60)
+
+		return None

@@ -195,23 +195,11 @@ def search():
 
 @app.route("/detail/<int:id>")
 def detail(id):
-	# Leer todo el catalogo, buscar la pelicula con id=id en el catalogo,
-	# y pasar la pelicula a la plantilla para que esta muestre la informacion
+	film = database.db_getFilmInfo(id)
+	if film is None:
+		redirect(url_for('index', message='There was an unexpected error'))
 
-	dFilter = lambda x: x['id'] == id
-
-	catalogue_data = __getCatalogue__()
-	categories_data = database.db_getCategories()
-
-	l = list(filter(dFilter, catalogue_data))
-	film = l[0]
-
-	dCatFilter = lambda x: x['id'] == film['category']
-
-	l = list(filter(dCatFilter, categories_data))
-	category = l[0]
-
-	return render_template('detail.html', user=__getUser__(), basket=__getBasket__(), film=film, category=category)
+	return render_template('detail.html', user=__getUser__(), basket=__getBasket__(), film=film, category='category')
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
