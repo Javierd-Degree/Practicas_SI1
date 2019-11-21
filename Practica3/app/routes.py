@@ -35,6 +35,7 @@ def __getBasket__():
 	return session['shopping_cart']
 
 def __addToBasket__(item):
+	# TODO Distinguir entre si esta o no loggeado
 	if 'shopping_cart' not in session:
 		session['shopping_cart'] = [item]
 		session['shopping_cart'][0]['quantity'] = 1
@@ -273,12 +274,12 @@ def login():
 		if 'email' in request.form and 'password' in request.form:
 			email = request.form.get('email')
 			password = request.form.get('password')
-			
+
 			res = database.db_login(email, password)
 			if res != errors.OK:
 				return render_template('login.html', error=errors.errorToString(res), basket=__getBasket__())
 
-
+			# TODO Pasar lo que haya en el carrito a la base de datos
 			session['user'] = database.db_getUserDict(email)
 			session.modified=True
 			# Add a cookie to store the last logged users' email
@@ -290,12 +291,11 @@ def login():
 
 @app.route("/addToBasket/<int:id>", methods=['GET', 'POST'])
 def addToBasket(id):
-	dFilter = lambda x: x['id'] == id
+	film = database.db_getFilmInfo(id)
+	if film is None:
+		redirect(url_for('index', message='There was an unexpected error'))
 
-	catalogue_data = __getCatalogue__()
 
-	l = list(filter(dFilter, catalogue_data))
-	film = l[0]
 	__addToBasket__(film)
 	return redirect(url_for('index', message='Item added'))
 
@@ -306,12 +306,10 @@ def removeFromBasket(id):
 
 @app.route("/incCount/<int:id>", methods=['GET', 'POST'])
 def incCount(id):
-	dFilter = lambda x: x['id'] == id
+	film = database.db_getFilmInfo(id)
+	if film is None:
+		redirect(url_for('index', message='There was an unexpected error'))
 
-	catalogue_data = __getCatalogue__()
-
-	l = list(filter(dFilter, catalogue_data))
-	film = l[0]
 	__addToBasket__(film)
 	return redirect(url_for('basket'))
 
@@ -330,7 +328,6 @@ def change_quant(id):
 					session['shopping_cart'] = basket
 					session.modified=True
 					break
-			print(basket[i]['id'])
 	return redirect(url_for('basket'))
 
 @app.route("/decCount/<int:id>", methods=['GET', 'POST'])

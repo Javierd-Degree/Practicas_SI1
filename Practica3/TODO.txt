@@ -1,0 +1,4 @@
+- Añadir texto a resultados de Busqueda
+- Cambiar imagenes para que haya tres o cuatro distintas
+- Mostrar productos en vez de movies
+- Cuadrar texto dentro de casillas en pantalla principal

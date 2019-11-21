@@ -1,27 +1,27 @@
 CREATE OR REPLACE FUNCTION getTopVentas(minDate NUMERIC)
-    RETURNS TABLE(movieid INTEGER, movierelease VARCHAR, image VARCHAR, Año DOUBLE PRECISION, movietitle VARCHAR, Ventas BIGINT)
+    RETURNS TABLE(prod_id INTEGER, description VARCHAR, price NUMERIC, movierelease VARCHAR, image VARCHAR, Año DOUBLE PRECISION, movietitle VARCHAR, Ventas BIGINT)
 AS $$
     DECLARE
     BEGIN
-        RETURN QUERY (SELECT m.movieid, m.movierelease, m.image, date, m.movietitle, sales FROM
-            products NATURAL JOIN imdb_movies m NATURAL JOIN
+        RETURN QUERY (SELECT p.prod_id, p.description, p.price, m.movierelease, m.image, date, m.movietitle, sales FROM
+            products p NATURAL JOIN imdb_movies m NATURAL JOIN
             (SELECT z.date, z.prod_id, z.sales
             FROM
                 (
                     SELECT date, max(sales) as top_sales
                     FROM (
-                            SELECT date, prod_id, SUM(quantity) AS sales
-                            FROM getTopVentasView
-                            GROUP BY date, prod_id
+                            SELECT t.date, t.prod_id, SUM(t.quantity) AS sales
+                            FROM getTopVentasView t
+                            GROUP BY date, t.prod_id
                         ) x
                     GROUP BY
                         date
                 ) y
             JOIN
                 (
-                    SELECT date, prod_id, SUM(quantity) AS sales
-                    FROM getTopVentasView
-                    GROUP BY date, prod_id
+                    SELECT t.date, t.prod_id, SUM(t.quantity) AS sales
+                    FROM getTopVentasView t
+                    GROUP BY date, t.prod_id
                 ) z
             ON  y.date = z.date AND y.top_sales = z.sales
             WHERE z.date >= minDate) aux);

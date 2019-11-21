@@ -30,8 +30,8 @@
     {% for film in recommended_films %}
       <li class="film_item">
         <a href={{ url_for('detail', id=film['id']) }}>
-          <img class="film_item_img" src={{ url_for('data', filename='images/'+film['image']) }} alt="The image could not be shown.">
-          <div class="film_item_text">{{film['title']}}<br>{{film['price']}}$</div>
+          <img class="film_item_img" src={{ url_for('data', filename='images/'+film['image']) }}>
+          <p class="film_item_text">{{film['title']}}<br>{{film['price']}}$</p>
         </a>
       </li>
     {% endfor %}
@@ -42,8 +42,8 @@
     {% for film in best_seller_films %}
       <li class="film_item">
         <a href={{ url_for('detail', id=film['id']) }}>
-          <img class="film_item_img" src={{ url_for('data', filename='images/'+film['image']) }} alt="The image could not be shown.">
-          <div class="film_item_text">{{film['title']}}<br>{{film['price']}}$</div>
+          <img class="film_item_img" src={{ url_for('data', filename='images/'+film['image']) }}>
+          <p class="film_item_text">{{film['title']}}<br>{{film['price']}}$</p>
         </a>
       </li>
     {% endfor %}

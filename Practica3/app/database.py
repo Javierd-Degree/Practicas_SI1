@@ -26,7 +26,7 @@ def db_registerUser(name, password, mail, creditCard, cash):
 		# Conexion a la base de datos
 		db_conn = None
 		db_conn = db_engine.connect()
-		
+
 		# Guardamos la tarjeta de credito. Avisamos si esa tarjeta ya esta añadida
 		try:
 			db_conn.execute(db_table_creditCard.insert(), creditcard = creditCard)
@@ -41,9 +41,9 @@ def db_registerUser(name, password, mail, creditCard, cash):
 			delete_ccard = db_table_creditCard.delete().where(db_table_creditCard.c.creditcard == creditCard)
 			delete_ccard.execute()
 			return errors.ERROR_EMAIL_USED
-		
+
 		db_conn.close()
-		
+
 		return errors.OK
 
 	except:
@@ -61,7 +61,7 @@ def db_login(mail, password):
 		# Conexion a la base de datos
 		db_conn = None
 		db_conn = db_engine.connect()
-		
+
 		# Buscamos el usuario por su email y comprobamos la contraseña
 		select_user = select([db_table_users.c.password]).where(db_table_users.c.email == mail)
 		db_result = db_conn.execute(select_user)
@@ -71,9 +71,9 @@ def db_login(mail, password):
 
 		if results[0][0] != password:
 			return errors.ERROR_INCORRECT_PASSWORD
-		
+
 		db_conn.close()
-		
+
 		return errors.OK
 
 	except:
@@ -92,7 +92,7 @@ def db_getUserDict(mail):
 		# Conexion a la base de datos
 		db_conn = None
 		db_conn = db_engine.connect()
-		
+
 		# Buscamos el usuario por su email y devolvemos el nombre
 		select_user = select([db_table_users.c.username, db_table_users.c.email, db_table_users.c.creditcard, db_table_users.c.cash]).where(db_table_users.c.email == mail)
 		db_result = db_conn.execute(select_user)
@@ -105,9 +105,9 @@ def db_getUserDict(mail):
 		user['mail'] = results[0][1]
 		user['creditCard'] = results[0][2]
 		user['cash'] = results[0][3]
-		
+
 		db_conn.close()
-		
+
 		return user
 
 	except:
@@ -120,24 +120,54 @@ def db_getUserDict(mail):
 
 		return None
 
+def db_getUserBasquet(mail):
+		try:
+			# Conexion a la base de datos
+			db_conn = None
+			db_conn = db_engine.connect()
+
+			# Cargamos todas las peliculas de dicha categoria
+			query = "SELECT prod_id FROM orders NATURAL JOIN orderdetail WHERE useremail={} AND status=NULL".format(prodid)
+			cursor = db_conn.execute(query)
+			results = cursor.fetchall()
+
+			if len(results) == 0:
+				return []
+
+			films = []
+			for result in results:
+				# TODO Coger la informacion del carrito para cada pelicula
+
+			db_conn.close()
+			return film
+
+		except:
+			if db_conn is not None:
+				db_conn.close()
+			print("Exception in DB access:")
+			print("-"*60)
+			traceback.print_exc(file=sys.stderr)
+			print("-"*60)
+
+			return None
 
 def db_getCategories():
 	try:
 		# Conexion a la base de datos
 		db_conn = None
 		db_conn = db_engine.connect()
-		
+
 		# Buscamos el usuario por su email y devolvemos el nombre
 		get_categories = select([db_table_genres.c.genreid, db_table_genres.c.name])
 		db_result = db_conn.execute(get_categories)
 		results = db_result.fetchall()
-		
+
 		categories = []
 		for cat in results:
 			categories.append({'id': cat[0], 'name': cat[1]})
-		
+
 		db_conn.close()
-		
+
 		return categories
 
 	except:
@@ -150,33 +180,37 @@ def db_getCategories():
 
 		return []
 
-def __filmsToArray__(cursor):
+def __filmsToArray__(cursor=None, results=None):
 	# Pasamos a un diccionario para facilitar la carga de las peliculas
-	results = [{column:value for column, value in result.items()} for result in cursor]
+	if not results:
+		results = [{column:value for column, value in result.items()} for result in cursor]
 	films = []
 	for result in results:
 		film = {}
-		film['id'] = result['movieid']
-		film['title'] = result['movietitle']
-		film['image'] = result['image']
+		film['id'] = result.get('prod_id')
+		film['price'] = result.get('price')
+		film['title'] = result.get('movietitle')
+		film['image'] = result.get('image')
 		film['year'] = result.get('year')
-		film['synopsis'] = result['movierelease']
+		film['synopsis'] = result.get('movierelease')
+		film['product_desc'] = result.get('description')
+		if film['product_desc']:
+			film['title'] += ' ({})'.format(film['product_desc'])
 		films.append(film)
 
 	return films
 
 def db_getTopVentasFilms():
-	# TODO: limit the amount of films we return
 	try:
 		# Conexion a la base de datos
 		db_conn = None
 		db_conn = db_engine.connect()
-		
+
 		# Cargamos todas las peliculas de dicha categoria
 		query = 'SELECT * FROM getTopVentas({})'.format(datetime.datetime.now().year-3)
 		results = db_conn.execute(query)
 		films = __filmsToArray__(results)
-		
+
 		db_conn.close()
 		return films
 
@@ -194,12 +228,11 @@ def db_getRecommendedFilms():
 		# Conexion a la base de datos
 		db_conn = None
 		db_conn = db_engine.connect()
-		
+
 		# Cargamos todas las peliculas de dicha categoria
-		query = 'SELECT * FROM imdb_movies ORDER BY year DESC LIMIT 10'
+		query = 'SELECT * FROM imdb_movies NATURAL JOIN products ORDER BY year DESC LIMIT 10'
 		results = db_conn.execute(query)
 		films = __filmsToArray__(results)
-		
 		db_conn.close()
 		return films
 
@@ -211,20 +244,18 @@ def db_getRecommendedFilms():
 		traceback.print_exc(file=sys.stderr)
 		print("-"*60)
 
-
-
 def db_getFilmsByCategoryId(categoryid):
 	# TODO: limit the amount of films we return
 	try:
 		# Conexion a la base de datos
 		db_conn = None
 		db_conn = db_engine.connect()
-		
+
 		# Cargamos todas las peliculas de dicha categoria
-		query = 'SELECT * FROM genres NATURAL JOIN imdb_movies WHERE genreid = {} LIMIT 50'.format(categoryid)
+		query = 'SELECT * FROM genres NATURAL JOIN imdb_movies NATURAL JOIN products WHERE genreid = {} LIMIT 50'.format(categoryid)
 		results = db_conn.execute(query)
 		films = __filmsToArray__(results)
-		
+
 		db_conn.close()
 		return films
 
@@ -246,12 +277,12 @@ def db_getFilmsByTitle(title):
 		# Conexion a la base de datos
 		db_conn = None
 		db_conn = db_engine.connect()
-		
+
 		# Cargamos todas las peliculas de dicha categoria
-		query = "SELECT * FROM imdb_movies WHERE movietitle @@ to_tsquery('{}') LIMIT 50".format(title)
+		query = "SELECT * FROM imdb_movies NATURAL JOIN products WHERE movietitle @@ to_tsquery('{}') LIMIT 50".format(title)
 		results = db_conn.execute(query)
 		films = __filmsToArray__(results)
-		
+
 		db_conn.close()
 		return films
 
@@ -272,12 +303,12 @@ def db_getFilmsByTitleAndCategoryId(title, categoryid):
 		# Conexion a la base de datos
 		db_conn = None
 		db_conn = db_engine.connect()
-		
+
 		# Cargamos todas las peliculas de dicha categoria
-		query = "SELECT * FROM genres NATURAL JOIN imdb_movies WHERE movietitle @@ to_tsquery('{}') AND genreid = {} LIMIT 50".format(title, categoryid)
+		query = "SELECT * FROM genres NATURAL JOIN imdb_movies NATURAL JOIN products WHERE movietitle @@ to_tsquery('{}') AND genreid = {} LIMIT 50".format(title, categoryid)
 		results = db_conn.execute(query)
 		films = __filmsToArray__(results)
-		
+
 		db_conn.close()
 		return films
 
@@ -291,16 +322,19 @@ def db_getFilmsByTitleAndCategoryId(title, categoryid):
 
 		return []
 
-def db_getFilmInfo(filmid):
+def db_getFilmInfo(prodid):
 	try:
 		# Conexion a la base de datos
 		db_conn = None
 		db_conn = db_engine.connect()
-		
+
 		# Cargamos todas las peliculas de dicha categoria
-		query = "SELECT * FROM imdb_movies WHERE movieid = {} LIMIT 50".format(filmid)
-		results = db_conn.execute(query)
-		film = __filmsToArray__(results)[0] # Solo hay uno por ser movieid PK
+		query = "SELECT * FROM imdb_movies NATURAL JOIN products WHERE prod_id = {} LIMIT 50".format(prodid)
+		cursor = db_conn.execute(query)
+		# En este caso, necesitamos saber el id de pelicula, no solo del producto
+		results = [{column:value for column, value in result.items()} for result in cursor]
+		filmid = results[0]['movieid']
+		film = __filmsToArray__(results=results)[0] # Solo hay uno por ser movieid PK
 
 		# Tres actores principales
 		subquery = "SELECT * FROM imdb_actormovies NATURAL JOIN imdb_actors WHERE movieid = {} ORDER BY creditsposition LIMIT 3".format(filmid)
@@ -320,11 +354,6 @@ def db_getFilmInfo(filmid):
 		results = db_conn.execute(query).fetchone()
 		film['categories'] = results[0] if results is not None else 'No info available'
 
-
-		# COMPROBAR
-		film['price'] = -1
-		print(film)
-		
 		db_conn.close()
 		return film
 

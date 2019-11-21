@@ -51,7 +51,7 @@ body, html{
 		font-size: 32pt;
 		font-weight: 400;
 		color: rgb(244, 185, 66);
-		opacity: 0.85;	
+		opacity: 0.85;
 	}
 
 	.title:hover{
@@ -367,7 +367,7 @@ h5{
 		display:inline-block
 		margin-right: 20px;
 		position: relative;
-		overflow: auto;
+		overflow: hidden;
 		display:inline-block;
 	}
 
@@ -390,6 +390,7 @@ h5{
 			bottom: 10px;
 			transform: translateX(50%);
 			text-align: center;
+			background-color: red;
 			color: white;
 		}
 
