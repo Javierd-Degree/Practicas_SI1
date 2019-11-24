@@ -2,3 +2,5 @@
 - Cambiar imagenes para que haya tres o cuatro distintas
 - Mostrar productos en vez de movies
 - Cuadrar texto dentro de casillas en pantalla principal
+- Arreglar PK orders no se autoincrementa bien (Al loggearse con un usuario que no tenga carrito aun)
+- Probar que el carrito funciona bien añadiendo, eliminando, con los botones, con el textfield, y al logearnos

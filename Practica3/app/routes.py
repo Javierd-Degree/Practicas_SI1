@@ -28,6 +28,11 @@ def __getCatalogue__():
 
 def __getBasket__():
 	# session['basket'] stores a list of Films stored as in data/catalogue.json
+	user = __getUser__()
+	if user:
+		# Si el usuario esta loggeado, trabajamos en la base de datos
+		return database.db_getUserBasket(user['mail'])
+	# Si el usuario no esta loggeado, trabajamos con la sesion
 	if 'shopping_cart' not in session:
 		session['shopping_cart'] = []
 		session.modified=True
@@ -35,7 +40,13 @@ def __getBasket__():
 	return session['shopping_cart']
 
 def __addToBasket__(item):
-	# TODO Distinguir entre si esta o no loggeado
+	user = __getUser__()
+	if user:
+		# Si el usuario esta loggeado, trabajamos en la base de datos
+		database.db_addToUserBasket(user['mail'], item['id'])
+		return
+
+	# Si el usuario no esta loggeado, trabajamos con la sesion
 	if 'shopping_cart' not in session:
 		session['shopping_cart'] = [item]
 		session['shopping_cart'][0]['quantity'] = 1
@@ -55,6 +66,13 @@ def __addToBasket__(item):
 		session.modified=True
 
 def __removeFromBasket__(item):
+	user = __getUser__()
+	if user:
+		# Si el usuario esta loggeado, trabajamos en la base de datos
+		database.db_removeFromUserBasket(user['mail'], item['id'])
+		return
+
+	# Si el usuario no esta loggeado, trabajamos con la sesion
 	if 'shopping_cart' not in session:
 		session['shopping_cart'] = []
 		session.modified=True
@@ -69,6 +87,13 @@ def __removeFromBasket__(item):
 		session.modified=True
 
 def __removeOneFromBasket__(item):
+	user = __getUser__()
+	if user:
+		# Si el usuario esta loggeado, trabajamos en la base de datos
+		database.db_removeFromUserBasket(user['mail'], item['id'])
+		return
+
+	# Si el usuario no esta loggeado, trabajamos con la sesion
 	if 'shopping_cart' not in session:
 		session['shopping_cart'] = []
 		session.modified=True
@@ -282,6 +307,12 @@ def login():
 			# TODO Pasar lo que haya en el carrito a la base de datos
 			session['user'] = database.db_getUserDict(email)
 			session.modified=True
+			# Pasamos las cosas del carrito de la sesion al carrito del usuario
+			basket = session.get('shopping_cart')
+			if basket is not None:
+				for item in basket:
+					database.db_addToUserBasket(email, item['id'], item['quantity'])
+
 			# Add a cookie to store the last logged users' email
 			resp = make_response(redirect(url_for('index')))
 			resp.set_cookie('useremail', email)
@@ -321,13 +352,19 @@ def change_quant(id):
 		if quant == 0:
 			__removeFromBasket__(id)
 		else:
-			basket = session['shopping_cart']
-			for i in range(len(basket)):
-				if basket[i]['id'] == id:
-					basket[i]['quantity'] = quant
-					session['shopping_cart'] = basket
-					session.modified=True
-					break
+			user = __getUser__()
+			if user:
+				# Si el usuario esta loggeado, trabajamos en la base de datos
+				database.db_setQuantityUserBasket(user['mail'], id, quant)
+			else:
+				# Si el usuario no esta loggeado, trabajamos en la sesion
+				basket = session['shopping_cart']
+				for i in range(len(basket)):
+					if basket[i]['id'] == id:
+						basket[i]['quantity'] = quant
+						session['shopping_cart'] = basket
+						session.modified=True
+						break
 	return redirect(url_for('basket'))
 
 @app.route("/decCount/<int:id>", methods=['GET', 'POST'])

@@ -14,7 +14,7 @@ Para ejecutar el script: `psql -U alumnodb si1 -f actualiza.sql`
 
 
 
-
+HEMOS IMPLEMENTADO TAMBIEN LA BUSQUEDA
 
 
 

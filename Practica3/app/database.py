@@ -120,14 +120,24 @@ def db_getUserDict(mail):
 
 		return None
 
-def db_getUserBasquet(mail):
+def db_getUserBasket(mail):
 		try:
 			# Conexion a la base de datos
 			db_conn = None
 			db_conn = db_engine.connect()
 
-			# Cargamos todas las peliculas de dicha categoria
-			query = "SELECT prod_id FROM orders NATURAL JOIN orderdetail WHERE useremail={} AND status=NULL".format(prodid)
+			# En primer lugar, comprobamos si tiene una entrada de carrito (con status==NULL) en la base de datos, si no, la creamos
+			query = "SELECT * FROM orders WHERE useremail='{}' AND status IS NULL".format(mail)
+			cursor = db_conn.execute(query)
+			print()
+			if len(cursor.fetchall()) == 0:
+				print('No hay una entrada de carrito para el usuario')
+				# TODO No deberia hacer falta eso para establecer el orderid, se deberia hacer solo
+				query = "INSERT INTO orders(orderid, useremail, status, orderdate) VALUES ((SELECT MAX(orderid) FROM orders)+1, '{}', NULL, NOW())".format(mail)
+				db_conn.execute(query)
+
+
+			query = "SELECT prod_id, quantity FROM orders NATURAL JOIN orderdetail WHERE useremail='{}' AND status IS NULL".format(mail)
 			cursor = db_conn.execute(query)
 			results = cursor.fetchall()
 
@@ -136,10 +146,15 @@ def db_getUserBasquet(mail):
 
 			films = []
 			for result in results:
-				# TODO Coger la informacion del carrito para cada pelicula
+				film = db_getFilmInfo(result[0])
+				if film is None:
+					continue
+
+				film['quantity'] = result[1]
+				films.append(film)
 
 			db_conn.close()
-			return film
+			return films
 
 		except:
 			if db_conn is not None:
@@ -150,6 +165,138 @@ def db_getUserBasquet(mail):
 			print("-"*60)
 
 			return None
+
+def db_addToUserBasket(mail, prod_id, quantity=1):
+		try:
+			# Conexion a la base de datos
+			db_conn = None
+			db_conn = db_engine.connect()
+
+			# En primer lugar, comprobamos si el producto ya está en el carrito del usuario
+			query = "SELECT quantity, orderid FROM orders NATURAL JOIN orderdetail WHERE prod_id={} AND useremail='{}' AND status IS NULL".format(prod_id, mail)
+			cursor = db_conn.execute(query)
+			result = cursor.fetchone()
+			print(result)
+			if result:
+				print('Ya añadido, sumamos')
+				# Ya está añadido, sumamos
+				query = "UPDATE orderdetail WHERE orderid={}, prod_id={} SET quantity=quantity+{}".format(result[1], prod_id, quantity)
+				db_conn.execute(query)
+			else:
+				print('No añadido, añadimos')
+				# Añadimos el elemento a la tabla. Para ello, cogemos en primer lugar el orderid
+				query = "SELECT orderid FROM orders WHERE useremail='{}' AND status IS NULL".format(mail)
+				cursor = db_conn.execute(query)
+				result = cursor.fetchone()
+				if not result:
+					return errors.ERROR_INTERNAL_BASKET
+
+				query = "INSERT INTO orderdetail VALUES ({}, {}, (SELECT price FROM products WHERE prod_id={} LIMIT 1),{})".format(result[0], prod_id, prod_id, quantity)
+				db_conn.execute(query)
+
+
+			db_conn.close()
+			return errors.OK
+
+		except:
+			if db_conn is not None:
+				db_conn.close()
+			print("Exception in DB access:")
+			print("-"*60)
+			traceback.print_exc(file=sys.stderr)
+			print("-"*60)
+			return errors.ERROR
+
+def db_setQuantityUserBasket(mail, prod_id, quantity):
+		try:
+			# Conexion a la base de datos
+			db_conn = None
+			db_conn = db_engine.connect()
+
+			# En primer lugar, comprobamos si el producto ya está en el carrito del usuario
+			query = "SELECT quantity, orderid FROM orders NATURAL JOIN orderdetail WHERE prod_id={} AND useremail='{}' AND status IS NULL".format(prod_id, mail)
+			cursor = db_conn.execute(query)
+			result = cursor.fetchone()
+			if result:
+				# Ya está añadido, modificamos la cantidad
+				query = "UPDATE orderdetail WHERE orderid={}, prod_id={} SET quantity={}".format(result[1], prod_id, quantity)
+				db_conn.execute(query)
+			else:
+				# Añadimos el elemento a la tabla. Para ello, cogemos en primer lugar el orderid
+				query = "SELECT orderid FROM orders WHERE useremail='{}' AND status IS NULL".format(mail)
+				cursor = db_conn.execute(query)
+				result = cursor.fetchone()
+				if not result:
+					return errors.ERROR_INTERNAL_BASKET
+
+				query = "INSERT INTO orderdetail VALUES ({}, {}, (SELECT price FROM products WHERE prod_id={} LIMIT 1),{})".format(orderid, prod_id, prod_id, quantity)
+				db_conn.execute(query)
+
+
+			db_conn.close()
+			return errors.OK
+
+		except:
+			if db_conn is not None:
+				db_conn.close()
+			print("Exception in DB access:")
+			print("-"*60)
+			traceback.print_exc(file=sys.stderr)
+			print("-"*60)
+			return errors.ERROR
+
+def db_removeFromUserBasket(mail, prod_id):
+		try:
+			# Conexion a la base de datos
+			db_conn = None
+			db_conn = db_engine.connect()
+
+			query = "DELETE FROM orderdetail WHERE prod_id={} AND orderid IN (SELECT orderid FROM orders WHERE useremail='{}' AND status IS NULL)".format(prod_id, useremail)
+			cursor = db_conn.execute(query)
+
+			db_conn.close()
+			return errors.OK
+
+		except:
+			if db_conn is not None:
+				db_conn.close()
+			print("Exception in DB access:")
+			print("-"*60)
+			traceback.print_exc(file=sys.stderr)
+			print("-"*60)
+			return errors.ERROR
+
+def db_removeOneFromUserBasket(mail, prod_id):
+		try:
+			# Conexion a la base de datos
+			db_conn = None
+			db_conn = db_engine.connect()
+			# Comprobamos si la cantidad es 1 (en este caso, habría que eliminar el artículo de la cesta) o superior (decrementar)
+			query = "SELECT quantity, orderid FROM orders NATURAL JOIN orderdetail WHERE prod_id={} AND useremail='{}' AND status IS NULL".format(prod_id, mail)
+			cursor = db_conn.execute(query)
+			result = cursor.fetchone()
+			if not result:
+				return errors.ERROR_INTERNAL_BASKET
+
+			res = errors.OK
+			if result[0] == 1:
+				res = db_removeFromUserBasket(mail, prod_id)
+			else:
+				query = "UPDATE orderdetail WHERE prod_id = {} AND orderid={} SET quantity=quantity-1".format(prod_id, result[1])
+				cursor = db_conn.execute(query)
+
+			db_conn.close()
+			return res
+
+		except:
+			if db_conn is not None:
+				db_conn.close()
+			print("Exception in DB access:")
+			print("-"*60)
+			traceback.print_exc(file=sys.stderr)
+			print("-"*60)
+			return errors.ERROR
+
 
 def db_getCategories():
 	try:
@@ -189,6 +336,8 @@ def __filmsToArray__(cursor=None, results=None):
 		film = {}
 		film['id'] = result.get('prod_id')
 		film['price'] = result.get('price')
+		if film['price']:
+			film['price'] = float(film['price'])
 		film['title'] = result.get('movietitle')
 		film['image'] = result.get('image')
 		film['year'] = result.get('year')
