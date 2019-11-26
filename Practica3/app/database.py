@@ -575,3 +575,48 @@ def db_getFilmInfo(prodid):
 		print("-"*60)
 
 		return None
+
+def db_getUserHistory(mail):
+	try:
+		# Conexion a la base de datos
+		db_conn = None
+		db_conn = db_engine.connect()
+
+
+		# Leemos todos los pedidos completados del usuario
+		query = "SELECT orderid, prod_id, price, quantity FROM orderdetail WHERE orderid IN (SELECT orderid FROM orders WHERE useremail='{}' AND status IS NOT NULL) ORDER BY orderid DESC".format(mail)
+		cursor = db_conn.execute(query)
+		results = cursor.fetchall()
+		
+		history = {}
+		for order in results:
+			item = {}
+			item['price'] = order[2]
+			item['quantity'] = order[3]
+
+			query = "SELECT movietitle, image, description FROM products NATURAL JOIN imdb_movies WHERE prod_id={}".format(order[1])
+			cursor = db_conn.execute(query)
+			result = cursor.fetchone()
+			if result is None:
+				continue
+
+			title = '{} ({})'.format(result[0], result[2])
+			item['film'] = {'id': order[1], 'title': title, 'image': result[1]}
+			if order[0] not in history:
+				history[order[0]] = []
+
+			history[order[0]].append(item)
+
+		db_conn.close()
+		return history
+
+	except:
+		if db_conn is not None:
+			db_conn.close()
+		print("Exception in DB access:")
+		print("-"*60)
+		traceback.print_exc(file=sys.stderr)
+		print("-"*60)
+		return None
+
+# cabral.jungle@jmail.com

@@ -14,15 +14,15 @@
     </div>
 
     {% if history and history|length > 0 %}
-      {% for date, films in history.items() %}
+      {% for orderid, films in history.items() %}
         <div class="history_day_card">
           <div class="history_day_card_title">
-            <h3 class="history_day_card_title_text">Date: {{ date }}</h2>
-            <img class="history_day_card_title_image history_chevron_down title_button_{{date}}" id="chevron_down_{{date}}" src={{ url_for('static', filename='images/chevron-down.png') }}>
-            <img class="history_day_card_title_image history_chevron_up title_button_{{date}}" id="chevron_up_{{date}}" src={{ url_for('static', filename='images/chevron-up.png') }}>
+            <h3 class="history_day_card_title_text">Order: {{ orderid }}</h2>
+            <img class="history_day_card_title_image history_chevron_down title_button_{{orderid}}" id="chevron_down_{{orderid}}" src={{ url_for('static', filename='images/chevron-down.png') }}>
+            <img class="history_day_card_title_image history_chevron_up title_button_{{orderid}}" id="chevron_up_{{orderid}}" src={{ url_for('static', filename='images/chevron-up.png') }}>
           </div>
           
-          <ul class="history_list" id="history_list_{{date}}">
+          <ul class="history_list" id="history_list_{{orderid}}">
             {% for item in films %}
               <li class="history_item">
                 <a href={{ url_for('detail', id=item['film']['id']) }} class="list_a_item">
@@ -33,7 +33,7 @@
                       Quantity: {{ item['quantity'] }}
                     </div>
                     <div class="history_item_text">
-                      Order time: {{ item['time'] }}
+                      Order time: Not available
                     </div>
                   </div>
                 </a>
@@ -87,11 +87,11 @@
   <!-- Script para expandir y contraer loe elementos del item -->
   <script type="text/javascript">
     {% if history and history|length > 0 %}
-      {% for date, films in history.items() %}
-        $(".title_button_"+$.escapeSelector("{{date}}")).click(function () {
-          $("#history_list_"+$.escapeSelector("{{date}}")).slideToggle();
-          $("#chevron_down_"+$.escapeSelector("{{date}}")).toggle();
-          $("#chevron_up_"+$.escapeSelector("{{date}}")).toggle();
+      {% for orderid, films in history.items() %}
+        $(".title_button_"+$.escapeSelector("{{orderid}}")).click(function () {
+          $("#history_list_"+$.escapeSelector("{{orderid}}")).toggle({duration: 0});
+          $("#chevron_down_"+$.escapeSelector("{{orderid}}")).toggle({duration: 0});
+          $("#chevron_up_"+$.escapeSelector("{{orderid}}")).toggle({duration: 0});
         });
       {% endfor %}
     {% endif %}

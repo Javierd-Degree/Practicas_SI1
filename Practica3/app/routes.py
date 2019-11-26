@@ -109,62 +109,6 @@ def __removeOneFromBasket__(itemid):
 		session['shopping_cart'] = basket
 		session.modified=True
 
-def __getUserHistory__(username):
-	if not __isUser__(username):
-		return []
-
-	catalogue_data = __getCatalogue__()
-	# Leemos el historial del usuario
-	folder = os.path.join(app.root_path,'usuarios/'+username)
-	print(os.path.join(folder, 'history.json'))
-	try:
-		with open(os.path.join(folder, 'history.json'), encoding="utf-8") as f:
-			date_history = {}
-			user_history = f.read()
-			return json.loads(user_history)
-
-	except Exception as e:
-		# Si el fichero no existe, el usuario no tiene nada en el historial
-		# Imprimimos por si acaso es otro tipo de error
-		print('Excepcion en __getUserHistory__:\n{}'.format(e))
-		return []
-
-def __getUserHistoryFormatted__(username):
-	# Un diccionario en el que agrupamos según
-	# la fecha, los articulos que se han comprado en dicha fecha
-	if not __isUser__(username):
-		return []
-
-	catalogue_data = __getCatalogue__()
-	# Leemos el historial del usuario
-	folder = os.path.join(app.root_path,'usuarios/'+username)
-	print(os.path.join(folder, 'history.json'))
-	try:
-		with open(os.path.join(folder, 'history.json'), encoding="utf-8") as f:
-			date_history = {}
-			user_history = f.read()
-			user_history = json.loads(user_history)
-			# Cada elemento de user_history contiene el id de la pelicula, la fecha de compra
-			# y el precio de compra. Cambiamos el id de la pelicula por la pelicula
-			# en sí.
-			for item in user_history:
-				filmID = item['filmId']
-				for film in catalogue_data:
-					if film['id'] == filmID:
-						item['film'] = film
-						break
-
-				if item['date'] not in date_history:
-					date_history[item['date']] = []
-				date_history[item['date']].append(item)
-
-
-			return date_history
-	except Exception as e:
-		# Si el fichero no existe, el usuario no tiene nada en el historial
-		# Imprimimos por si acaso es otro tipo de error
-		print('Excepcion en __getUserHistoryFormatted__:\n{}'.format(e))
-		return []
 
 @app.route("/")
 def index():
@@ -385,16 +329,19 @@ def decCount(id):
 
 @app.route("/basket", methods=['GET', 'POST'])
 def basket():
+	user = __getUser__()
+	if user is None:
+		return render_template('404.html')
+
 	price = 0
 	for film in __getBasket__():
 		price += film['price']*film['quantity']
 		price = round(price, 2)
 
 	if request.method == 'GET':
-		return render_template('basket.html', user=__getUser__(), basket=__getBasket__(), price=price)
+		return render_template('basket.html', user=user, basket=__getBasket__(), price=price)
 
 	if request.method == 'POST':
-		user = __getUser__()
 		res = database.db_completePurchase(user['mail'])
 
 		if res == errors.ERROR_PURCHASE_NOT_ENOUGH_CASH:
@@ -403,7 +350,7 @@ def basket():
 			return render_template('basket.html', user=user, basket=__getBasket__(), price=price, error=error)
 		elif res == errors.OK:
 			# Actualizamos el usuario de session
-			session['user'] = database.db_getUserDict(__getUser__()['mail'])
+			session['user'] = database.db_getUserDict(user['mail'])
 			return redirect(url_for('index', message='Purchase completed'))
 		else:
 			print(errors.errorToString(res))
@@ -411,10 +358,14 @@ def basket():
 
 @app.route("/cash/", methods=['GET', 'POST'])
 def cash():
+	user = __getUser__()
+	if user is None:
+		return render_template('404.html')
+
 	cash = request.form.get('cash')
-	database.db_incrementUserCash(__getUser__()['mail'], float(cash))
+	database.db_incrementUserCash(user['mail'], float(cash))
 	# Actualizamos el usuario de session
-	session['user'] = database.db_getUserDict(__getUser__()['mail'])
+	session['user'] = database.db_getUserDict(user['mail'])
 	return redirect(url_for('history'))
 
 @app.route("/logout", methods=['GET', 'POST'])
@@ -425,9 +376,13 @@ def logout():
 
 @app.route("/history", methods=['GET'])
 def history():
+	user = __getUser__()
+	if user is None:
+		return render_template('404.html')
+
 	return render_template('history.html',
-	 						user=__getUser__(),
-							history=__getUserHistoryFormatted__(session['user']['name']),
+	 						user=user,
+							history=database.db_getUserHistory(user['mail']),
 							basket=__getBasket__())
 
 # Devolvemos un numero aleatorio de usuarios logeados en la plataforma
