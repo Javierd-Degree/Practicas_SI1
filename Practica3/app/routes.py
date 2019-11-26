@@ -27,7 +27,6 @@ def __getCatalogue__():
 		return json.loads(catalogue_data)
 
 def __getBasket__():
-	# session['basket'] stores a list of Films stored as in data/catalogue.json
 	user = __getUser__()
 	if user:
 		# Si el usuario esta loggeado, trabajamos en la base de datos
@@ -65,11 +64,11 @@ def __addToBasket__(item):
 		session['shopping_cart'] = items
 		session.modified=True
 
-def __removeFromBasket__(item):
+def __removeFromBasket__(itemId):
 	user = __getUser__()
 	if user:
 		# Si el usuario esta loggeado, trabajamos en la base de datos
-		database.db_removeFromUserBasket(user['mail'], item['id'])
+		database.db_removeFromUserBasket(user['mail'], itemId)
 		return
 
 	# Si el usuario no esta loggeado, trabajamos con la sesion
@@ -79,18 +78,18 @@ def __removeFromBasket__(item):
 	else:
 		basket = session['shopping_cart']
 		for i in range(len(basket)):
-			if basket[i]['id'] == item:
+			if basket[i]['id'] == itemId:
 				del basket[i]
 				break
 
 		session['shopping_cart'] = basket
 		session.modified=True
 
-def __removeOneFromBasket__(item):
+def __removeOneFromBasket__(itemid):
 	user = __getUser__()
 	if user:
 		# Si el usuario esta loggeado, trabajamos en la base de datos
-		database.db_removeFromUserBasket(user['mail'], item['id'])
+		database.db_removeOneFromUserBasket(user['mail'], itemid)
 		return
 
 	# Si el usuario no esta loggeado, trabajamos con la sesion
@@ -100,7 +99,7 @@ def __removeOneFromBasket__(item):
 	else:
 		basket = session['shopping_cart']
 		for i in range(len(basket)):
-			if basket[i]['id'] == item:
+			if basket[i]['id'] == itemid:
 				if basket[i]['quantity'] == 1:
 					del basket[i]
 				else:
@@ -267,6 +266,16 @@ def register():
 
 			session['user'] = user
 			session.modified=True
+
+			# Nos aseguramos de inicializar el carrito del usuario
+			__getBasket__()
+			# Pasamos las cosas del carrito de la sesion al carrito del usuario
+			basket = session.get('shopping_cart')
+			if basket is not None:
+				for item in basket:
+					database.db_addToUserBasket(mail, item['id'], item['quantity'])
+			session['shopping_cart'] = []
+
 			return redirect(url_for('index'))
 
 		else:
@@ -289,7 +298,6 @@ def register():
 			return render_template('register.html', basket=__getBasket__(), name=name, mail=mail,
 									creditCard=creditCard, error=error)
 
-
 @app.route("/login", methods=['GET', 'POST'])
 def login():
 	if request.method == 'GET':
@@ -304,14 +312,17 @@ def login():
 			if res != errors.OK:
 				return render_template('login.html', error=errors.errorToString(res), basket=__getBasket__())
 
-			# TODO Pasar lo que haya en el carrito a la base de datos
 			session['user'] = database.db_getUserDict(email)
 			session.modified=True
+
+			# Nos aseguramos de inicializar el carrito del usuario
+			__getBasket__()
 			# Pasamos las cosas del carrito de la sesion al carrito del usuario
 			basket = session.get('shopping_cart')
 			if basket is not None:
 				for item in basket:
 					database.db_addToUserBasket(email, item['id'], item['quantity'])
+			session['shopping_cart'] = []
 
 			# Add a cookie to store the last logged users' email
 			resp = make_response(redirect(url_for('index')))
@@ -372,66 +383,38 @@ def decCount(id):
 	__removeOneFromBasket__(id)
 	return redirect(url_for('basket'))
 
-
 @app.route("/basket", methods=['GET', 'POST'])
 def basket():
 	price = 0
+	for film in __getBasket__():
+		price += film['price']*film['quantity']
+		price = round(price, 2)
+
 	if request.method == 'GET':
-		for film in session['shopping_cart']:
-			price += film['price']*film['quantity']
-			price = round(price, 2)
 		return render_template('basket.html', user=__getUser__(), basket=__getBasket__(), price=price)
 
 	if request.method == 'POST':
-		user = session['user']
-		name = user['name']
-		history = __getUserHistory__(name)
+		user = __getUser__()
+		res = database.db_completePurchase(user['mail'])
 
-		for film in session['shopping_cart']:
-			price += film['price']*film['quantity']
-
-		if price > user['cash']:
-			cash_r = round(__getUser__()['cash'], 2)
+		if res == errors.ERROR_PURCHASE_NOT_ENOUGH_CASH:
+			cash_r = round(user['cash'], 2)
 			error = 'Not enough cash in your acount ({}$)'.format(cash_r)
-			return render_template('basket.html', user=__getUser__(), basket=__getBasket__(), price=price, error=error)
-
-		else:
-			user['cash'] -= price
-			user['cash'] = round(user['cash'], 2)
-			for film in session['shopping_cart']:
-				film_data = {}
-				film_data['filmId'] = film['id']
-				film_data['price'] = film['price']*film['quantity']
-				film_data['quantity'] = film['quantity']
-				film_data['date'] = datetime.now().strftime("%m/%d/%Y")
-				film_data['time'] = datetime.now().strftime("%H:%M:%S")
-				history.append(film_data)
-
-
-			session['shopping_cart'] = []
-			session.modified=True
-			folder = os.path.join(app.root_path,'usuarios/'+name)
-			with open(os.path.join(folder, 'datos.dat'), 'w', encoding='utf-8') as f:
-				json.dump(user, f)
-			with open(os.path.join(folder, 'history'+'.json'), 'w', encoding='utf-8') as f:
-				json.dump(history, f)
-
+			return render_template('basket.html', user=user, basket=__getBasket__(), price=price, error=error)
+		elif res == errors.OK:
+			# Actualizamos el usuario de session
+			session['user'] = database.db_getUserDict(__getUser__()['mail'])
 			return redirect(url_for('index', message='Purchase completed'))
+		else:
+			print(errors.errorToString(res))
+			return redirect(url_for('login'))
 
 @app.route("/cash/", methods=['GET', 'POST'])
 def cash():
 	cash = request.form.get('cash')
-	user = __getUser__()
-	user['cash'] += float(cash)
-	# Redondeamos a dos decimales
-	user['cash'] = round(user['cash'], 2)
-	session['user'] = user
-	session.modified=True
-
-	folder = os.path.join(app.root_path,'usuarios/'+user['name'])
-	with open(os.path.join(folder, 'datos.dat'), 'w', encoding='utf-8') as f:
-		json.dump(user, f)
-
+	database.db_incrementUserCash(__getUser__()['mail'], float(cash))
+	# Actualizamos el usuario de session
+	session['user'] = database.db_getUserDict(__getUser__()['mail'])
 	return redirect(url_for('history'))
 
 @app.route("/logout", methods=['GET', 'POST'])

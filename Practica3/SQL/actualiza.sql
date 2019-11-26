@@ -2,6 +2,9 @@
 ALTER TABLE orders ADD COLUMN useremail CHARACTER VARYING(50);
 UPDATE orders o SET useremail=c.email FROM customers c WHERE o.customerid=c.customerid;
 
+-- Actualizamos el serial de orders
+SELECT setval('orders_orderid_seq', MAX(orderid)) FROM orders;
+
 -- ===== CUSTOMERS =====
 -- Cambiamos la clave primaria
 ALTER TABLE customers DROP CONSTRAINT IF EXISTS customers_pkey;
@@ -69,6 +72,9 @@ ALTER TABLE inventory ADD CONSTRAINT prod_id_fkey FOREIGN KEY (prod_id)
 ALTER TABLE orders ADD CONSTRAINT useremail_fkey FOREIGN KEY (useremail)
 	REFERENCES customers (email);
 ALTER TABLE orders DROP COLUMN IF EXISTS customerid;
+-- Establecemos netamount y tax a 0 por defecto
+ALTER TABLE orders ALTER COLUMN netamount SET DEFAULT 0;
+ALTER TABLE orders ALTER COLUMN tax SET DEFAULT 0;
 
 -- ===== IMDB_MOVIES =====
 -- Añadimos una columna llamada image y la rellenamos con la dirección una imagen por defecto

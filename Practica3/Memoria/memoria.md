@@ -6,6 +6,9 @@ Para abrir la base de datos: `psql -U alumnodb si1`
 
 Para ejecutar el script: `psql -U alumnodb si1 -f actualiza.sql`
 
+Usamos fulltext search de postgres para que sean lo mas fieles posibles.
+Implementamos busqueda y forma de añadir cash en history
+
 ##### Cosas a cambiar en la plataforma:
 
 - El usuario se loggea usando el email, no el nombre de usuario.
