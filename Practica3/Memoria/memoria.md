@@ -11,6 +11,8 @@ Implementamos busqueda y forma de añadir cash en history, history
 
 Imagenes aleatorias entre 10 distintas porque no hay en la base de datos, descripcion fija porque no hay informacion.
 
+La pagina tarda en cargar por el query de getTopVentas usado. Lo almacenamos en la sesion¿? Indicar que se podria hacer pero preferimos no hacerlo. Era la unica forma de conseguir que aparecieran varios con el mismo numero de ventas
+
 ##### Cosas a cambiar en la plataforma:
 
 - El usuario se loggea usando el email, no el nombre de usuario.
