@@ -77,8 +77,8 @@ ALTER TABLE orders ALTER COLUMN netamount SET DEFAULT 0;
 ALTER TABLE orders ALTER COLUMN tax SET DEFAULT 0;
 
 -- ===== IMDB_MOVIES =====
--- Añadimos una columna llamada image y la rellenamos con la dirección una imagen por defecto
-ALTER TABLE imdb_movies ADD COLUMN image CHARACTER VARYING(256) NOT NULL CONSTRAINT df_movies_image DEFAULT 'default.jpg';
+-- Añadimos una columna llamada image y la rellenamos con la dirección una imagen por defecto (entre las 10 disponibles)
+ALTER TABLE imdb_movies ADD COLUMN image CHARACTER VARYING(256) NOT NULL CONSTRAINT df_movies_image DEFAULT 'default_'|| FLOOR(RANDOM() * 10 + 1)::int ||'.jpg';
 
 -- ===== IMDB_ACTORMOVIES =====
 -- Hacemos que actorid y movieid sean FKs

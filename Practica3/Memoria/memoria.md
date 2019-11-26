@@ -7,7 +7,9 @@ Para abrir la base de datos: `psql -U alumnodb si1`
 Para ejecutar el script: `psql -U alumnodb si1 -f actualiza.sql`
 
 Usamos fulltext search de postgres para que sean lo mas fieles posibles.
-Implementamos busqueda y forma de añadir cash en history
+Implementamos busqueda y forma de añadir cash en history, history
+
+Imagenes aleatorias entre 10 distintas porque no hay en la base de datos, descripcion fija porque no hay informacion.
 
 ##### Cosas a cambiar en la plataforma:
 
