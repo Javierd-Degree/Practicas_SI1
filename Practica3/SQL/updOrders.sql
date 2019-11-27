@@ -9,22 +9,22 @@ CREATE OR REPLACE FUNCTION actualizar_carrito() RETURNS TRIGGER AS $actualizar_c
 
 
 		IF (TG_OP = 'INSERT') THEN
-			NEW.price = (SELECT price FROM products WHERE prod_id=NEW.prod_id)*NEW.quantity;
+			NEW.price = (SELECT price FROM products WHERE prod_id=NEW.prod_id);
 			orderid_val = NEW.orderid;
 			-- Actualizamos el precio y la fecha
-			UPDATE orders SET orderdate=NOW(), netamount=(netamount+NEW.price) WHERE orderid=NEW.orderid;
+			UPDATE orders SET orderdate=NOW(), netamount=(netamount+NEW.price*NEW.quantity) WHERE orderid=NEW.orderid;
 			
 
 		ELSEIF (TG_OP = 'UPDATE') THEN
-			NEW.price = (SELECT price FROM products WHERE prod_id=NEW.prod_id)*NEW.quantity;
+			NEW.price = (SELECT price FROM products WHERE prod_id=NEW.prod_id);
 			orderid_val = OLD.orderid;
 			-- Actualizamos el precio y la fecha
-			UPDATE orders SET orderdate=NOW(), netamount=(netamount+NEW.price-OLD.price) WHERE orderid=OLD.orderid;
+			UPDATE orders SET orderdate=NOW(), netamount=(netamount+NEW.price*NEW.quantity-OLD.price*OLD.quantity) WHERE orderid=OLD.orderid;
 
 		ELSEIF (TG_OP = 'DELETE') THEN
 			orderid_val = OLD.orderid;
 			-- Actualizamos el precio y la fecha
-			UPDATE orders SET orderdate=NOW(), netamount=(netamount-OLD.price) WHERE orderid=OLD.orderid;
+			UPDATE orders SET orderdate=NOW(), netamount=(netamount-OLD.price*OLD.quantity) WHERE orderid=OLD.orderid;
 
 			-- Volvemos a calcular el precio con impuestos
 			UPDATE orders SET totalamount=ROUND((netamount+netamount*tax/100)::numeric, 2) WHERE orderid=orderid_val;

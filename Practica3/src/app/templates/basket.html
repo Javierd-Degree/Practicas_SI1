@@ -1,0 +1,84 @@
+{% extends "index.html" %}
+{% block content %}
+  <h3>Shopping cart</h3>
+  {% if basket and basket|length > 0 %}
+    <ul class="result_list">
+      {% for film in basket %}
+        <li class="result_item">
+          <div class="list_a_item">
+            <img class="result_item_img" src={{ url_for('data', filename='images/'+film['image']) }} alt="The image could not be shown.">
+            <div class="basket_item">
+              <a href={{ url_for('detail', id=film['id']) }} class="result_item_title">{{film['title'] + ' - ' + film['price']|string + '$'}}</a>
+              <div class="result_item_text">
+                Sinopsis de la película. No está almacenada en la base de datos, por lo que añadimos texto aleatorio para rellenar el hueco. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              </div>
+              <h4>Quantity: </h4>
+              <div class="quantityCont">
+              	<form id={{"quantForm_"+film['id']|string}} action={{ url_for('change_quant', id=film['id']) }} onsubmit="send({{film['id']}}); return false;">
+              		<input class="quantTextBox" type="text" id={{"quantity_"+film['id']|string}} name="quant" onkeyup='checkNumber({{film['id']}});' value={{'' or film['quantity']}}>
+              		<span id={{"quantMessage_"+film['id']|string}}></span>
+              	</form>
+              	<form action={{ url_for('decCount', id=film['id']) }}>
+              		<input type="image" src={{ url_for('static', filename='images/minus.png') }} id="search_button" alt="The icon could not be shown.">
+              	</form>
+              	<form action={{ url_for('incCount', id=film['id']) }}>
+              		<input type="image" src={{ url_for('static', filename='images/plus.png') }} id="search_button" alt="The icon could not be shown.">
+              	</form>
+              </div>
+              <form action={{ url_for('removeFromBasket', id=film['id']) }} class="basket_item_form">
+                <input class="history_item_button" type="submit" value="Remove">
+              </form>
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <div class="priceBox">
+    	<div id='priceSpan'> Price: {{price}}$</div>
+
+      {% if user is defined and user %}
+        <form action={{ url_for('basket') }} method="post">
+            <input class="addButton" type="submit" value="Finish Purchase">
+        </form>
+      {% else %}
+        <span id='need_logged'> Need to be logged in to finish the purchase.</span>
+      {% endif %}
+    </div>
+    <br> <p class="error">{{ '' or error }}</p>
+  {% else %}
+  <h2>No items available</h2>
+  {% endif %}
+  <script>
+  	var checkNumber = function(filmid){
+  		var number = document.getElementById('quantity_'+filmid).value;
+  		var err = isNaN(number);
+  		if (number == ''){
+  			err = true;
+  		}
+  		if (err == false) {
+  			number = Number(number);
+  			if (number%1 != 0 || number < 0){
+  				err = true;
+  			}
+  		}
+  		if (err == true){
+  			document.getElementById('quantMessage_'+filmid).style.color = 'red';
+			document.getElementById('quantMessage_'+filmid).innerHTML = 'Invalid quantity.';
+			return false;
+  		} else{
+  			document.getElementById('quantMessage_'+filmid).innerHTML = '';
+  			return true;
+  		}
+  	}
+  	var send = function(filmid){
+  		var correct = false;
+  		correct = checkNumber(filmid);
+  		if (correct == false){
+  			return false;
+  		}else{
+  			document.getElementById('quantForm_'+filmid).submit();
+  		}
+  	}
+  </script>
+{% endblock %}

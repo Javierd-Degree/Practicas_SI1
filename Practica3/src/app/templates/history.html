@@ -1,0 +1,101 @@
+{% extends "index.html" %}
+{% block content %}
+
+  {% if user is defined and user %}
+    <h3>History</h3>
+    <div>
+      <h4>Available cash: {{user['cash']}}$</h4>
+      Add cash:
+      <form id="cashForm" method="post" action={{ url_for('cash')}}>
+        <input class="cashTextBox" type="number" min="0" id="quantity" name="cash" onkeyup='checkNumber()'>
+        <input class="addCashButton" type="button" onclick="send()" value="Add">
+        <span id='quantMessage'></span>
+      </form>
+    </div>
+
+    {% if history and history|length > 0 %}
+      {% for orderid, films in history.items() %}
+        <div class="history_day_card">
+          <div class="history_day_card_title">
+            <h3 class="history_day_card_title_text">Order: {{ orderid }}</h2>
+            <img class="history_day_card_title_image history_chevron_down title_button_{{orderid}}" id="chevron_down_{{orderid}}" src={{ url_for('static', filename='images/chevron-down.png') }}>
+            <img class="history_day_card_title_image history_chevron_up title_button_{{orderid}}" id="chevron_up_{{orderid}}" src={{ url_for('static', filename='images/chevron-up.png') }}>
+          </div>
+          
+          <ul class="history_list" id="history_list_{{orderid}}">
+            {% for item in films %}
+              <li class="history_item">
+                <a href={{ url_for('detail', id=item['film']['id']) }} class="list_a_item">
+                  <img class="history_item_img" src={{ url_for('data', filename='images/'+item['film']['image']) }} alt="The image could not be shown.">
+                  <div class="history_item_info">
+                    <div class="history_item_title">{{item['film']['title'] + ' - ' + item['price']|string + '$'}}</div>
+                    <div class="history_item_text">
+                      Quantity: {{ item['quantity'] }}
+                    </div>
+                    <div class="history_item_text">
+                      Order time: Not available
+                    </div>
+                  </div>
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    {% else %}
+      <h2>No items available</h2>
+    {% endif %}
+
+  {% else %}
+    <h3>Ooops, this was never suppose to happen. <br>You need to be logged in order to see your history.</h3>
+  {% endif %}
+
+<!-- Script para comprobar que el saldo añadido es un numero y es positivo -->
+  <script>
+    var checkNumber = function(){
+      var number = document.getElementById('quantity').value;
+      var err = false;
+      if (number == ''){
+        err = true;
+      }
+      if (err == false) {
+        number = Number(number);
+        if (number < 0){
+          err = true;
+        }
+      }
+      if (err == true){
+        document.getElementById('quantMessage').style.color = 'red';
+        document.getElementById('quantMessage').innerHTML = 'Invalid quantity.';
+        return false;
+      } else{
+        document.getElementById('quantMessage').innerHTML = '';
+        return true;
+      }
+    }
+    var send = function(){
+      var correct = false;
+      correct = checkNumber();
+      if (correct == false){
+        return false;
+      }else{
+        document.getElementById('cashForm').submit();
+      }
+    }
+  </script>
+
+  <!-- Script para expandir y contraer loe elementos del item -->
+  <script type="text/javascript">
+    {% if history and history|length > 0 %}
+      {% for orderid, films in history.items() %}
+        $(".title_button_"+$.escapeSelector("{{orderid}}")).click(function () {
+          $("#history_list_"+$.escapeSelector("{{orderid}}")).toggle({duration: 0});
+          $("#chevron_down_"+$.escapeSelector("{{orderid}}")).toggle({duration: 0});
+          $("#chevron_up_"+$.escapeSelector("{{orderid}}")).toggle({duration: 0});
+        });
+      {% endfor %}
+    {% endif %}
+    
+  </script>
+
+{% endblock %}

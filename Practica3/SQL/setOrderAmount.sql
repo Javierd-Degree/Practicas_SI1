@@ -3,7 +3,8 @@ CREATE OR REPLACE FUNCTION setOrderAmount()
 AS $$
     DECLARE
     BEGIN
-      UPDATE orders o SET netamount=p.price FROM setOrderAmountView p WHERE o.orderid=p.orderid;
-      UPDATE orders o SET totalamount=ROUND((o.netamount+o.netamount*o.tax/100)::numeric, 2);
+      UPDATE orders o SET netamount=p.price, totalamount=ROUND((p.price+p.price*o.tax/100)::numeric, 2)
+      FROM setOrderAmountView p
+      WHERE o.orderid=p.orderid;
     END;
 $$ LANGUAGE plpgsql;
