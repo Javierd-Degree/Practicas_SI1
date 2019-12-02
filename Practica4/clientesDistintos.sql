@@ -1,7 +1,6 @@
 -- Creamos los tres indices que serian mas eficientes
 CREATE INDEX test_1 ON orders(date_part('year', orderdate));
 CREATE INDEX test_2 ON orders(date_part('m', orderdate));
-CREATE INDEX test_3 ON orders(totalamount);
 
 -- Query pedido
 SELECT COUNT(DISTINCT customerid)
