@@ -87,10 +87,11 @@ def getCustomer(username, password):
     else:
         return {'firstname': res['firstname'], 'lastname': res['lastname']}
     
-#def delCustomer(customerid, bFallo, bSQL, duerme, bCommit):
-    
+def delCustomer(customerid, bFallo, bSQL, duerme, bCommit):
+    db_conn = db_engine.connect()
+
     # Array de trazas a mostrar en la página
-    #dbr=[]
+    dbr=[]
 
     # TODO: Ejecutar consultas de borrado
     # - ordenar consultas según se desee provocar un error (bFallo True) o no
@@ -99,15 +100,55 @@ def getCustomer(username, password):
     # - suspender la ejecución 'duerme' segundos en el punto adecuado para forzar deadlock
     # - ir guardando trazas mediante dbr.append()
     
-    #try:
-        # TODO: ejecutar consultas
+    try:
+        # Ejecutar consultas
+        db_conn.execute('BEGIN;')
+        dbr.append('Iniciamos una transacción')
 
-    #except Exception as e:
-        # TODO: deshacer en caso de error
+        query = 'DELETE FROM orderdetail WHERE orderid IN (SELECT orderid FROM orders WHERE customerid={})'.format(customerid)
+        dbr.append('Intentamos borrar los detalles de todos los pedidos y el carrito del usuario')
+        db_conn.execute(query)
+        dbr.append('Borramos los detalles de todos los pedidos y el carrito del usuario')
 
-    #else:
-        # TODO: confirmar cambios si todo va bien
+        if not bFallo:
+        	query = 'DELETE FROM orders WHERE customerid={}'.format(customerid)
+        	dbr.append('Intentamos borrar los pedidos y el carrito del usuario')
+	        db_conn.execute(query)
+	        dbr.append('Borramos los pedidos y el carrito del usuario')
 
-        
-    #return dbr
+	        query = 'DELETE FROM customers WHERE customerid={}'.format(customerid)
+        	dbr.append('Intentamos borrar el usuario')
+        	db_conn.execute(query)
+        	dbr.append('Borramos el usuario')
+
+        else:
+        	if bCommit:
+        		# Hacemos un commit intermedio antes del error, y otro begin
+        		dbr.append('Hacemos un commit intermedio')
+        		db_conn.execute('COMMIT;')
+        		db_conn.execute('BEGIN;')
+        		dbr.append('Iniciamos otra transacción')
+
+        	query = 'DELETE FROM customers WHERE customerid={}'.format(customerid)
+        	dbr.append('Intentamos borrar el usuario')
+        	db_conn.execute(query)
+        	dbr.append('Borramos el usuario')
+
+        	query = 'DELETE FROM orders WHERE customerid={}'.format(customerid)
+        	dbr.append('Intentamos borrar los pedidos y el carrito del usuario')
+	        db_conn.execute(query)
+	        dbr.append('Borramos los pedidos y el carrito del usuario')
+
+
+    except Exception as e:
+        # Deshacer en caso de error
+        dbr.append('Ha habido un error, hacemos Rollback')
+        db_conn.execute('ROLLBACK;')
+
+    else:
+        # Confirmar cambios si todo va bien
+        dbr.append('Hacemos commit de la transacción')
+        db_conn.execute('COMMIT;')
+
+    return dbr
 
