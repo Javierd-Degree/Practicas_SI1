@@ -19,7 +19,7 @@ def getListaCliMes(db_conn, mes, anio, iumbral, iintervalo, use_prepare, break0,
     # TODO: implementar la consulta; asignar nombre 'cc' al contador resultante
     consulta = " SELECT COUNT(DISTINCT customerid) AS cc FROM orders WHERE date_part('year', orderdate) = " + anio + " AND date_part('month', orderdate) = " + mes + " AND totalamount > "
 
-    # TODO: ejecutar la consulta 
+    # TODO: ejecutar la consulta
     # - mediante PREPARE, EXECUTE, DEALLOCATE si use_prepare es True
     # - mediante db_conn.execute() si es False
 
@@ -28,7 +28,7 @@ def getListaCliMes(db_conn, mes, anio, iumbral, iintervalo, use_prepare, break0,
 
     for ii in range(niter):
 
-        query = consulta + str(iumbral) + "; " 
+        query = consulta + str(iumbral) + "; "
 
         # TODO: ...
         if use_prepare == True:
@@ -45,10 +45,10 @@ def getListaCliMes(db_conn, mes, anio, iumbral, iintervalo, use_prepare, break0,
         # TODO: si break0 es True, salir si contador resultante es cero
         if res['cc'] == 0:
             break
-        
+
         # Actualizacion de umbral
         iumbral = iumbral + iintervalo
-                
+
     return dbr
 
 def getMovies(anio):
@@ -66,40 +66,33 @@ def getMovies(anio):
             # build up the dictionary
             d[tup[0]] = tup[1]
         a.append(d)
-        
-    resultproxy.close()  
-    
-    db_conn.close()  
-    
+
+    resultproxy.close()
+
+    db_conn.close()
+
     return a
-    
+
 def getCustomer(username, password):
     # conexion a la base de datos
     db_conn = db_engine.connect()
 
     query="select * from customers where username='" + username + "' and password='" + password + "'"
     res=db_conn.execute(query).first()
-    
-    db_conn.close()  
+
+    db_conn.close()
 
     if res is None:
         return None
     else:
         return {'firstname': res['firstname'], 'lastname': res['lastname']}
-    
+
 def delCustomer(customerid, bFallo, bSQL, duerme, bCommit):
     db_conn = db_engine.connect()
 
     # Array de trazas a mostrar en la página
     dbr=[]
 
-    # TODO: Ejecutar consultas de borrado
-    # - ordenar consultas según se desee provocar un error (bFallo True) o no
-    # - ejecutar commit intermedio si bCommit es True
-    # - usar sentencias SQL ('BEGIN', 'COMMIT', ...) si bSQL es True
-    # - suspender la ejecución 'duerme' segundos en el punto adecuado para forzar deadlock
-    # - ir guardando trazas mediante dbr.append()
-    
     try:
         # Ejecutar consultas
         db_conn.execute('BEGIN;')
@@ -111,34 +104,35 @@ def delCustomer(customerid, bFallo, bSQL, duerme, bCommit):
         dbr.append('Borramos los detalles de todos los pedidos y el carrito del usuario')
 
         if not bFallo:
-        	query = 'DELETE FROM orders WHERE customerid={}'.format(customerid)
-        	dbr.append('Intentamos borrar los pedidos y el carrito del usuario')
-	        db_conn.execute(query)
-	        dbr.append('Borramos los pedidos y el carrito del usuario')
+            time.sleep(duerme)
 
-	        query = 'DELETE FROM customers WHERE customerid={}'.format(customerid)
-        	dbr.append('Intentamos borrar el usuario')
-        	db_conn.execute(query)
-        	dbr.append('Borramos el usuario')
+            query = 'DELETE FROM orders WHERE customerid={}'.format(customerid)
+            dbr.append('Intentamos borrar los pedidos y el carrito del usuario')
+            db_conn.execute(query)
+            dbr.append('Borramos los pedidos y el carrito del usuario')
+
+            query = 'DELETE FROM customers WHERE customerid={}'.format(customerid)
+            dbr.append('Intentamos borrar el usuario')
+            db_conn.execute(query)
+            dbr.append('Borramos el usuario')
 
         else:
-        	if bCommit:
-        		# Hacemos un commit intermedio antes del error, y otro begin
-        		dbr.append('Hacemos un commit intermedio')
-        		db_conn.execute('COMMIT;')
-        		db_conn.execute('BEGIN;')
-        		dbr.append('Iniciamos otra transacción')
+            if bCommit:
+                # Hacemos un commit intermedio antes del error, y otro begin
+                dbr.append('Hacemos un commit intermedio')
+                db_conn.execute('COMMIT;')
+                db_conn.execute('BEGIN;')
+                dbr.append('Iniciamos otra transacción')
 
-        	query = 'DELETE FROM customers WHERE customerid={}'.format(customerid)
-        	dbr.append('Intentamos borrar el usuario')
-        	db_conn.execute(query)
-        	dbr.append('Borramos el usuario')
+            query = 'DELETE FROM customers WHERE customerid={}'.format(customerid)
+            dbr.append('Intentamos borrar el usuario')
+            db_conn.execute(query)
+            dbr.append('Borramos el usuario')
 
-        	query = 'DELETE FROM orders WHERE customerid={}'.format(customerid)
-        	dbr.append('Intentamos borrar los pedidos y el carrito del usuario')
-	        db_conn.execute(query)
-	        dbr.append('Borramos los pedidos y el carrito del usuario')
-
+            query = 'DELETE FROM orders WHERE customerid={}'.format(customerid)
+            dbr.append('Intentamos borrar los pedidos y el carrito del usuario')
+            db_conn.execute(query)
+            dbr.append('Borramos los pedidos y el carrito del usuario')
 
     except Exception as e:
         # Deshacer en caso de error
@@ -151,4 +145,3 @@ def delCustomer(customerid, bFallo, bSQL, duerme, bCommit):
         db_conn.execute('COMMIT;')
 
     return dbr
-
