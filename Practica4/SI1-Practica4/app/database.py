@@ -6,7 +6,7 @@ import sys, traceback, time
 from sqlalchemy import create_engine
 
 # configurar el motor de sqlalchemy
-db_engine = create_engine("postgresql://alumnodb:alumnodb@localhost/si1P4", echo=False, execution_options={"autocommit":False})
+db_engine = create_engine("postgresql://alumnodb:alumnodb@localhost/si1", echo=False, execution_options={"autocommit":False})
 
 def dbConnect():
     return db_engine.connect()
@@ -95,8 +95,13 @@ def delCustomer(customerid, bFallo, bSQL, duerme, bCommit):
 
     try:
         # Ejecutar consultas
-        db_conn.execute('BEGIN;')
         dbr.append('Iniciamos una transacción')
+        if bSQL:
+            db_conn.execute('BEGIN;')
+            dbr.append('Transacción inicializada con SQL')
+        else:
+            trans = db_conn.begin()
+            dbr.append('Transacción inicializada con SQLAlchemy')
 
         query = 'DELETE FROM orderdetail WHERE orderid IN (SELECT orderid FROM orders WHERE customerid={})'.format(customerid)
         dbr.append('Intentamos borrar los detalles de todos los pedidos y el carrito del usuario')
@@ -104,7 +109,9 @@ def delCustomer(customerid, bFallo, bSQL, duerme, bCommit):
         dbr.append('Borramos los detalles de todos los pedidos y el carrito del usuario')
 
         if not bFallo:
+            dbr.append('Dormimos {} segundos'.format(duerme))
             time.sleep(duerme)
+            dbr.append('Despertamos')
 
             query = 'DELETE FROM orders WHERE customerid={}'.format(customerid)
             dbr.append('Intentamos borrar los pedidos y el carrito del usuario')
@@ -120,8 +127,16 @@ def delCustomer(customerid, bFallo, bSQL, duerme, bCommit):
             if bCommit:
                 # Hacemos un commit intermedio antes del error, y otro begin
                 dbr.append('Hacemos un commit intermedio')
-                db_conn.execute('COMMIT;')
-                db_conn.execute('BEGIN;')
+                
+                if bSQL:
+                    db_conn.execute('COMMIT;')
+                    db_conn.execute('BEGIN;')
+                    dbr.append('Commit intermedio hecho con SQL')
+                else:
+                    trans.commit()
+                    trans = db_conn.begin()
+                    dbr.append('Commit intermedio hecho con SQLAlchemy')
+
                 dbr.append('Iniciamos otra transacción')
 
             query = 'DELETE FROM customers WHERE customerid={}'.format(customerid)
@@ -137,11 +152,21 @@ def delCustomer(customerid, bFallo, bSQL, duerme, bCommit):
     except Exception as e:
         # Deshacer en caso de error
         dbr.append('Ha habido un error, hacemos Rollback')
-        db_conn.execute('ROLLBACK;')
+        if bSQL:
+            db_conn.execute('ROLLBACK;')
+            dbr.append('Rollback hecho con SQL')
+        else:
+            trans.rollback()
+            dbr.append('Rollback hecho con SQLAlchemy')
 
     else:
         # Confirmar cambios si todo va bien
         dbr.append('Hacemos commit de la transacción')
-        db_conn.execute('COMMIT;')
+        if bSQL:
+            db_conn.execute('COMMIT;')
+            dbr.append('Commit hecho con SQL')
+        else:
+            trans.commit()
+            dbr.append('Commit hecho con SQLAlchemy')
 
     return dbr
