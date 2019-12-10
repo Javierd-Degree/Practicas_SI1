@@ -170,7 +170,7 @@ Una vez modificadas las entradas de la tabla orders, accedemos a la página para
 
 Si llamamos primero desde la pagina web a eliminar un usuario, y acto seguido actualizamos el campo promo del usuario, al iniciar desde Python una transacción que modifica las entradas orderdetail del usuario, estas se bloquean, de forma que el trigger tiene que esperar a que la transacción finalice para poder ejecutarse. Esto deja un rastro en postgresql en forma de bloqueo, que se puede apreciar en la siguiente captura:
 
-![](./deadlock.png)
+![](./DeadLock.png)
 
 El tiempo que duerme el trigger está establecido por defecto en 20 segundos, si a la página web se le hace dormir unos segundos de más, el deadlock aparece también al ejecutar en primer lugar el update de la columna promo de customers, y en segundo lugar la petición a la web. Esto se debe a que una vez el trigger haya ejecutado el primer update, duerme los veinte segundos, en los cuales el servidor inicia la transacción bloqueando las filas de la tabla orders asociadas al usuario, y no las suelta hasta el final (por tener transacciones con aislamiento de nivel tres), para lo cual el servidor tendrá que dormir el tiempo indicado por el usuario. Una vez el servidor libere los locks, el trigger podrá finalizar.
 
