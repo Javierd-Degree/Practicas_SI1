@@ -16,10 +16,10 @@ def dbCloseConnect(db_conn):
 
 def getListaCliMes(db_conn, mes, anio, iumbral, iintervalo, use_prepare, break0, niter):
 
-    # TODO: implementar la consulta; asignar nombre 'cc' al contador resultante
+    # Implementamos la consulta; asignar nombre 'cc' al contador resultante
     consulta = " SELECT COUNT(DISTINCT customerid) AS cc FROM orders WHERE date_part('year', orderdate) = " + anio + " AND date_part('month', orderdate) = " + mes + " AND totalamount > "
 
-    # TODO: ejecutar la consulta
+    # Ejecutamos la consulta
     # - mediante PREPARE, EXECUTE, DEALLOCATE si use_prepare es True
     # - mediante db_conn.execute() si es False
 
@@ -30,7 +30,6 @@ def getListaCliMes(db_conn, mes, anio, iumbral, iintervalo, use_prepare, break0,
 
         query = consulta + str(iumbral) + "; "
 
-        # TODO: ...
         if use_prepare == True:
             db_conn.execute("PREPARE query AS " + query)
             res = db_conn.execute("EXECUTE query;").first()
@@ -42,7 +41,7 @@ def getListaCliMes(db_conn, mes, anio, iumbral, iintervalo, use_prepare, break0,
         # Guardar resultado de la query
         dbr.append({"umbral":iumbral,"contador":res['cc']})
 
-        # TODO: si break0 es True, salir si contador resultante es cero
+        # Si break0 es True, salir si contador resultante es cero
         if res['cc'] == 0:
             break
 

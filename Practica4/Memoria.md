@@ -133,7 +133,7 @@ Para este apartado, desactivamos las restricciones *ON DELETE CASCADE* referente
 pedidos, manteniendo las foreign keys, y desarrollamos la función *delCustomer* cuya estructura se aporta en el fichero *database.py*.
 Como contestación al apartado *j*, se hace un commit intermedio para dejar la base de datos en un estado inconsistente, y como esto finaliza la transacción, asegurando que todos los cambios hechos durante la transacción se hacen correctamente, hay que inicializar una nueva después.
 
-A continuacion mostramos algunos ejemplos de la salida de la página web en función de los parámetros recibidos:
+A continuación mostramos algunos ejemplos de la salida de la página web en función de los parámetros recibidos:
 - Transacción con SQL/SQLAlchemy y error de integridad:
 En ambos casos, se puede ver en la base de datos que no hay ningún cambio en los artículos, los pedidos o el usuario.
 ![](./F1.png)
@@ -164,7 +164,7 @@ UPDATE orders SET status=NULL where orderid=155;
 
 Esto implica que hemos definido un carrito para los usuarios con customerid 1, 2, 3, 4 y 5.
 
-Como las preguntas propuestas están bastante relacionadas entre sí,se discuten todas, desde la *h* hasta la *f* a continuacion:
+Como las preguntas propuestas están bastante relacionadas entre sí,se discuten todas, desde la *h* hasta la *f* a continuación:
 
 Una vez modificadas las entradas de la tabla orders, accedemos a la página para borrar el cliente con customerid 1, y simultáneamente hacemos un update de su columna promo. Esto nos permite confirmar que durante el sleep los cambios hechos (más allá de la actualización de la columna promo del usuario) no son visibles pues el trigger está bloqueado y no ha podido hacer ningún cambio, y como la pagina web utiliza una transacción, y esta no ha finalizado, sus cambios tampoco son visibles.
 
