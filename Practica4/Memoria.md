@@ -99,7 +99,6 @@ La segunda sentencia obtiene el mismo plan de ejecución que la primera con un t
 ![D_2IndexsinAnalyze](./D_2IndexsinAnalyze.png)
 
 
-
 Tras estas pruebas, generamos las estadísticas sobre la tabla con el uso de `ANALYZE`, y probamos las consultas para ver como afectan al rendimiento las estadísticas generadas.
 
 Con el uso de estadísticas se observa una enorme bajada en el tiempo de ejecución de la primera consulta, con un tiempo de 14 msec y el siguiente plan de ejecución.
@@ -128,14 +127,57 @@ La última tarda unos 44 msec  con el siguiente plan:
 
 En ambos casos se observa que las consultas son rápidas con el uso de estadísticas, pero menos que la consulta 1, esto puede deberse a que las estadísticas recolectadas en el ANALYZE para estas 2 consultas (los valores de status Paid y status Processed) sean menos resolutorias y por tanto, aunque ayuden a mejorar la eficiencia de la consulta, no sean capaces de mejorarla hasta el mismo punto que la primera consulta.
 
+## Transacciones y deadlocks
 ### Apartado E
+Para este apartado, desactivamos las restricciones *ON DELETE CASCADE* referentes al cliente y sus
+pedidos, manteniendo las foreign keys, y desarrollamos la función *delCustomer* cuya estructura se aporta en el fichero *database.py*.
+Como contestación al apartado *j*, se hace un commit intermedio para dejar la base de datos en un estado inconsistente, y como esto finaliza la transacción, asegurando que todos los cambios hechos durante la transacción se hacen correctamente, hay que inicializar una nueva después.
 
+A continuacion mostramos algunos ejemplos de la salida de la página web en función de los parámetros recibidos:
+- Transacción con SQL/SQLAlchemy y error de integridad:
+En ambos casos, se puede ver en la base de datos que no hay ningún cambio en los artículos, los pedidos o el usuario.
+![](./F1.png)
+![](./F2.png)
 
+- Transacción con SQL/SQLAlchemy, error de integridad y commit intermedio:
+En ambos casos, se puede ver en la base de datos como han desaparecido las entradas de la tabla orderdetail asociadas al order del usuario con status NULL (por haber hecho un commit intermedio), sin embargo, las tablas orders y customers no varían.
+![](./F3.png)
+![](./F4.png)
+
+- Transacción exitosa con SQL/SQLAlchemy:
+En ambos casos, se puede ver como el usuario ha desaparecido de la tabla customers, todos sus pedidos han desaparecido de la tabla orders, y todos los artículos de los pedidos han desaparecido de la tabla orderdetail, por lo que el usuario se ha borrado con éxito.
+![](./F5.png)
+![](./F6.png)
 
 ### Apartado F
+Una vez finalizado el apartado anterior, programamos el script *updPromo.sql* con las condiciones pedidas.
+
+Para probar los bloqueos, insertamos los siguientes comandos en la shell de postgresql para modificar algunas orders y ponerlas con status NULL, de forma que se comporten como carritos:
+
+```sql
+UPDATE orders SET status=NULL where orderid=108;
+UPDATE orders SET status=NULL where orderid=114;
+UPDATE orders SET status=NULL where orderid=120;
+UPDATE orders SET status=NULL where orderid=131;
+UPDATE orders SET status=NULL where orderid=155;
+```
+
+Esto implica que hemos definido un carrito para los usuarios con customerid 1, 2, 3, 4 y 5.
+
+Como las preguntas propuestas están bastante relacionadas entre sí,se discuten todas, desde la *h* hasta la *f* a continuacion:
+
+Una vez modificadas las entradas de la tabla orders, accedemos a la página para borrar el cliente con customerid 1, y simultáneamente hacemos un update de su columna promo. Esto nos permite confirmar que durante el sleep los cambios hechos (más allá de la actualización de la columna promo del usuario) no son visibles pues el trigger está bloqueado y no ha podido hacer ningún cambio, y como la pagina web utiliza una transacción, y esta no ha finalizado, sus cambios tampoco son visibles.
+
+Si llamamos primero desde la pagina web a eliminar un usuario, y acto seguido actualizamos el campo promo del usuario, al iniciar desde Python una transacción que modifica las entradas orderdetail del usuario, estas se bloquean, de forma que el trigger tiene que esperar a que la transacción finalice para poder ejecutarse. Esto deja un rastro en postgresql en forma de bloqueo, que se puede apreciar en la siguiente captura:
+
+![](./deadlock.png)
+
+El tiempo que duerme el trigger está establecido por defecto en 20 segundos, si a la página web se le hace dormir unos segundos de más, el deadlock aparece también al ejecutar en primer lugar el update de la columna promo de customers, y en segundo lugar la petición a la web. Esto se debe a que una vez el trigger haya ejecutado el primer update, duerme los veinte segundos, en los cuales el servidor inicia la transacción bloqueando las filas de la tabla orders asociadas al usuario, y no las suelta hasta el final (por tener transacciones con aislamiento de nivel tres), para lo cual el servidor tendrá que dormir el tiempo indicado por el usuario. Una vez el servidor libere los locks, el trigger podrá finalizar.
+
+Para solucionarlo, podríamos reducir el grado de aislamiento de las transacciones, sin embargo, esto quita gran parte del sentido, pues provocaría posibles fallos e inconsistencias en la base de datos.
 
 
-
+## Seguridad
 ### Apartado G
 
 Sabiendo que la query empleada para seleccionar el usuario a logear tiene la forma:
@@ -170,7 +212,7 @@ Por tanto nos hemos logeado correctamente con el usuario 'gatsby' cuyo nombre y 
 
 En caso de no conocer ningún nombre de usuario, esto no es un problema, pues basta con rellenar ambos campos de texto del formulario con fragmentos de código SQL que hagan que el resultado de ambas comprobaciones del `WHERE` sea `TRUE`, devolviendo así toda la lista de usuarios.
 
-Aunque la consulta devulva una lista con todos los usuarios, esto no es problema ya que la función `getCustomer()`del fichero `database.py` tan solo coge la primera entrada de la lista mediante el uso del método `.first()`, de este modo obtendríamos como resultado de la consulta el primer usuario de la tabla   `customers`. 
+Aunque la consulta devulva una lista con todos los usuarios, esto no es problema ya que la función `getCustomer()`del fichero `database.py` tan solo coge la primera entrada de la lista mediante el uso del método `.first()`, de este modo obtendríamos como resultado de la consulta el primer usuario de la tabla   `customers`.
 
 Para conseguir este resultado, introducimos en el campo de username una string cualquiera seguida de una comilla `'` para indicar el final del username y tras esto añadir `OR` seguido de una condición que sea siempre `TRUE` como `'a'='a` Tras esto, tenemos dos opciones, o bien hacemos lo mism que en apartado `a)` introduciendo `'--`tras esto para hacer que se ignore el campo de password; o bien introducimos en el campo password otra condición que siempre sea `TRUE`, por ejemplo, repitiendo lo mismo que en el campo username. En este segundo caso es importante no poner la comilla `'` tras la segunda `a` en ambos campos del texto del formulario, de modo que se emplee la comilla de cierre de la propia consulta como final de la string 'a'. Las consultas resultantes serían las siguientes:
 
@@ -375,7 +417,7 @@ Que nos devuelve la lista de clientes (representados por su identificador):
 
 ##### i)
 
-Para solucionar el grave problema de seguridad que tiene esta página en su acceso a base de datos, del mismo modo que en el apartado G, se podrían emplear las funciones proporcionadas por librerías de gestión de base de datos como `SQLAlchemy` en lugar de codificar directamente a mano sobre el código del servidor las consultas SQL. 
+Para solucionar el grave problema de seguridad que tiene esta página en su acceso a base de datos, del mismo modo que en el apartado G, se podrían emplear las funciones proporcionadas por librerías de gestión de base de datos como `SQLAlchemy` en lugar de codificar directamente a mano sobre el código del servidor las consultas SQL.
 
 Emplear una lista desplegable también solucionaría el problema pues evitaría que se pudiese introducir código SQL en el campo de búsqueda. Sin embargo esta sería una solución pobre ya que el acceso a base de datos seguiría siendo inseguro y podría presentar problemas si en otra URL de la página se necesita usar un campo de texto.
 
