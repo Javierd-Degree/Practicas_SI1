@@ -5,17 +5,6 @@ CREATE OR REPLACE FUNCTION actualizar_promo() RETURNS TRIGGER AS $actualizar_pro
 	DECLARE
 	BEGIN
 
-
-		UPDATE orderdetail o1
-		SET price=p.price*(1 - NEW.promo/100.0)
-		FROM products p
-		WHERE o1.prod_id=p.prod_id AND orderid IN (SELECT orderid FROM orders WHERE customerid=NEW.customerid AND status IS NULL);
-
-		-- Dormimos 40 segundos
-        RAISE NOTICE 'Dormimos';
-		PERFORM pg_sleep(20);
-        RAISE NOTICE 'Despertamos';
-
 		UPDATE orders
 		SET netamount=t.price
 		FROM
@@ -24,11 +13,23 @@ CREATE OR REPLACE FUNCTION actualizar_promo() RETURNS TRIGGER AS $actualizar_pro
 				GROUP BY orderid
 			) t;
 
+    	
+        -- Dormimos 40 segundos
+        RAISE NOTICE 'Dormimos';
+		PERFORM pg_sleep(20);
+        RAISE NOTICE 'Despertamos';
+
+        -- Es un update inutil, pero solo lo necesitamos para el interbloqueo
+        UPDATE orderdetail o1
+        SET price=p.price
+        FROM products p
+        WHERE o1.prod_id=p.prod_id AND orderid IN (SELECT orderid FROM orders WHERE customerid=NEW.customerid AND status IS NULL);
+
 		RETURN NEW;
 	END;
 $actualizar_promo$ LANGUAGE plpgsql;
 
 CREATE TRIGGER actualizar_promo AFTER UPDATE
     ON customers FOR EACH ROW
-		WHEN (OLD.promo != NEW.promo OR OLD.promo IS NULL) 
+		WHEN (OLD.promo != NEW.promo OR OLD.promo IS NULL)
     EXECUTE PROCEDURE actualizar_promo();

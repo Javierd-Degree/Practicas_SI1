@@ -166,18 +166,61 @@ Esto implica que hemos definido un carrito para los usuarios con customerid 1, 2
 
 Como las preguntas propuestas están bastante relacionadas entre sí,se discuten todas, desde la *h* hasta la *f* a continuación:
 
+#### Conseguir un bloqueo
 Una vez modificadas las entradas de la tabla orders, accedemos a la página para borrar el cliente con customerid 1, y simultáneamente hacemos un update de su columna promo. Esto nos permite confirmar que durante el sleep los cambios hechos (más allá de la actualización de la columna promo del usuario) no son visibles pues el trigger está bloqueado y no ha podido hacer ningún cambio, y como la pagina web utiliza una transacción, y esta no ha finalizado, sus cambios tampoco son visibles.
 
 Si llamamos primero desde la pagina web a eliminar un usuario, y acto seguido actualizamos el campo promo del usuario, al iniciar desde Python una transacción que modifica las entradas orderdetail del usuario, estas se bloquean, de forma que el trigger tiene que esperar a que la transacción finalice para poder ejecutarse. Esto deja un rastro en postgresql en forma de bloqueo, que se puede apreciar en la siguiente captura:
 
 ![](./DeadLock.png)
 
-El tiempo que duerme el trigger está establecido por defecto en 20 segundos, si a la página web se le hace dormir unos segundos de más, el deadlock aparece también al ejecutar en primer lugar el update de la columna promo de customers, y en segundo lugar la petición a la web. Esto se debe a que una vez el trigger haya ejecutado el primer update, duerme los veinte segundos, en los cuales el servidor inicia la transacción bloqueando las filas de la tabla orders asociadas al usuario, y no las suelta hasta el final (por tener transacciones con aislamiento de nivel tres), para lo cual el servidor tendrá que dormir el tiempo indicado por el usuario. Una vez el servidor libere los locks, el trigger podrá finalizar.
+Al ejecutar en primer lugar el update de la columna promo de customers, y en segundo lugar la petición a la web, aparece el mismo bloqueo. Esto se debe a que una vez el trigger haya ejecutado el primer update, duerme los veinte segundos, durante los cuales sigue teniendo bloqueados los campos actualizados de la tabla orderdetail. Como lo primero que intenta el servidor es borrar la tabla orderdetail, se bloquea hasta que el trigger despierta del sleep y finaliza.
 
-Para solucionarlo, podríamos reducir el grado de aislamiento de las transacciones, sin embargo, esto quita gran parte del sentido, pues provocaría posibles fallos e inconsistencias en la base de datos.
+#### Conseguir un interbloqueo
+Si lo que buscamos es conseguir que se produzca un interbloqueo en la base de datos, es necesario modificar el trigger para que se realize el sleep después de usar la tabla orders, y que se vuelva a utilizar después de dicho sleep la tabla orderdetail. No se puede actualizar la tabla orderdetail al prinicpio, pues en ese caso, tanto el trigger como el servidor, estarían actualizándola/borrándola al principio, lo que provoca que uno de los dos tenga que esperar a que el otro acabe completamente.
 
+Como en este caso no tiene sentido hacer el query en este orden, simplemente utilizamos el siguiente código dentro de un trigger para asegurarnos que ocurra un interbloqueo y poder mostrarlo:
+
+```sql
+UPDATE orders
+SET netamount=t.price
+FROM
+  (SELECT orderid, SUM(price) as price FROM orderdetail
+    WHERE orderid IN (SELECT orderid FROM orders WHERE customerid=NEW.customerid AND status IS NULL)
+    GROUP BY orderid
+  ) t;
+
+-- Dormimos 20 segundos
+RAISE NOTICE 'Dormimos';
+PERFORM pg_sleep(20);
+RAISE NOTICE 'Despertamos';
+
+
+-- Es un update inutil, pero solo lo necesitamos para el interbloqueo
+UPDATE orderdetail o1
+SET price=p.price
+FROM products p
+WHERE o1.prod_id=p.prod_id AND orderid IN (SELECT orderid FROM orders WHERE customerid=NEW.customerid AND status IS NULL);
+
+
+RETURN NEW;
+```
+
+Una vez creamos un trigger con estos comandos, y ejecutamos a la vez una modificación sobre la columna promo de un cliente, y un borrado desde la página web del mismo cliente, obtenemos lo siguiente:
+
+- Insertando continuamente en Postgresql el comando `SELECT relation::regclass, * FROM pg_locks WHERE NOT GRANTED;` para ver los bloqueos, aparecen dos locks:
+
+  ![](./DeadLock2.png)
+
+- En la terminal en la que hemos ejecutado el update de la tabla customers, aparece un mensaje indicando un interbloqueo:
+
+  ![](./DeadLock3.png)
+
+En este caso, el trigger se ha cancelado y la transacción ha finalizado, borrando los datos del usuario en cuestión.
+
+Para solucionar estos bloqueos e interbloqueos, podríamos reducir el grado de aislamiento de las transacciones, sin embargo, esto quita gran parte del sentido, pues provocaría posibles fallos e inconsistencias en la base de datos.
 
 ## Seguridad
+
 ### Apartado G
 
 Sabiendo que la query empleada para seleccionar el usuario a logear tiene la forma:
